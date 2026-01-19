@@ -24,8 +24,6 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 
     async function handleLogout() {
         await logout();
-        router.push("/login");
-        router.refresh();
     }
 
     return (
@@ -68,13 +66,13 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
                             {/* Role Badge with Enhanced Design */}
                             <div className="relative group/badge">
                                 <div className={`absolute -inset-0.5 rounded-full blur-sm opacity-40 group-hover/badge:opacity-70 transition-opacity ${userRole === "PM"
-                                        ? "bg-gradient-to-r from-orange-500 to-orange-600"
-                                        : "bg-gradient-to-r from-blue-500 to-blue-600"
+                                    ? "bg-gradient-to-r from-orange-500 to-orange-600"
+                                    : "bg-gradient-to-r from-blue-500 to-blue-600"
                                     }`}></div>
                                 <span
                                     className={`relative px-4 py-2 text-xs font-bold rounded-full border backdrop-blur-xl transition-all duration-300 flex items-center gap-2 ${userRole === "PM"
-                                            ? "bg-gradient-to-r from-orange-500/20 to-orange-600/15 text-orange-200 border-orange-500/40 shadow-lg shadow-orange-500/20 group-hover/badge:shadow-orange-500/30"
-                                            : "bg-gradient-to-r from-blue-500/20 to-blue-600/15 text-blue-200 border-blue-500/40 shadow-lg shadow-blue-500/20 group-hover/badge:shadow-blue-500/30"
+                                        ? "bg-gradient-to-r from-orange-500/20 to-orange-600/15 text-orange-200 border-orange-500/40 shadow-lg shadow-orange-500/20 group-hover/badge:shadow-orange-500/30"
+                                        : "bg-gradient-to-r from-blue-500/20 to-blue-600/15 text-blue-200 border-blue-500/40 shadow-lg shadow-blue-500/20 group-hover/badge:shadow-blue-500/30"
                                         }`}
                                 >
                                     <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${userRole === "PM" ? "bg-orange-400" : "bg-blue-400"

@@ -122,5 +122,5 @@ export async function registerWithGoogle(data: GoogleAuthData) {
 }
 
 export async function logout() {
-    await signOut({ redirect: false });
+    await signOut({ redirectTo: "/login" });
 }
