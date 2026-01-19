@@ -24,6 +24,8 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 
     async function handleLogout() {
         await logout();
+        router.push("/login");
+        router.refresh();
     }
 
     return (
