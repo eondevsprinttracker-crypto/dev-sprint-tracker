@@ -24,8 +24,11 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 
     async function handleLogout() {
         await logout();
-        router.push("/login");
         router.refresh();
+        // Small delay to ensure the session is invalidated before redirect
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 100);
     }
 
     return (
