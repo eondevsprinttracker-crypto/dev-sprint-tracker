@@ -89,10 +89,10 @@ export default function NewProjectPageClient() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
-            <div className="max-w-3xl mx-auto">
+        <div className="bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
+            <div className="w-full">
                 {/* Premium Form Container */}
-                <div className="form-container-premium animate-fade-in">
+                <div className="form-container-premium form-container-full animate-fade-in">
                     {/* Premium Header */}
                     <div className="form-header-premium">
                         <div

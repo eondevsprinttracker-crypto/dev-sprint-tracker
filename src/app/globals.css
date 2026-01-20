@@ -1259,6 +1259,18 @@ body {
   animation: gradient-shift 4s ease infinite;
 }
 
+/* Full-width variant (no card styling) */
+.form-container-full {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.form-container-full::before {
+  display: none;
+}
+
 /* Premium Header with Icon */
 .form-header-premium {
   display: flex;

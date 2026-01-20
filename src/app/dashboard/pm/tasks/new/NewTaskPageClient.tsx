@@ -134,7 +134,7 @@ export default function NewTaskPageClient() {
 
     if (loadingData) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white flex items-center justify-center">
+            <div className="flex items-center justify-center py-20">
                 <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center animate-pulse">
                         <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,10 +148,10 @@ export default function NewTaskPageClient() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
-            <div className="max-w-3xl mx-auto">
+        <div className="bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
+            <div className="w-full">
                 {/* Premium Form Container */}
-                <div className="form-container-premium animate-fade-in">
+                <div className="form-container-premium form-container-full animate-fade-in">
                     {/* Premium Header */}
                     <div className="form-header-premium">
                         <div className="form-header-icon">
