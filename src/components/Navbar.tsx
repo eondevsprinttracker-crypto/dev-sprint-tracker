@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { logout } from "@/app/actions/authActions";
+import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 
 interface NavbarProps {
@@ -23,12 +23,8 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
     }, []);
 
     async function handleLogout() {
-        await logout();
-        router.refresh();
-        // Small delay to ensure the session is invalidated before redirect
-        setTimeout(() => {
-            window.location.href = "/login";
-        }, 100);
+        // Use client-side signOut which works properly on Netlify
+        await signOut({ callbackUrl: "/login", redirect: true });
     }
 
     return (
