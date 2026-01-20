@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { startTask, logHours, changeTaskStatus } from "@/app/actions/taskActions";
 import TaskTimer from "@/components/TaskTimer";
 import { formatDuration } from "@/lib/utils";
@@ -63,17 +64,17 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
     };
 
     const statusConfig: Record<string, { bg: string; text: string; icon: string }> = {
-        Todo: { bg: "bg-slate-500/15", text: "text-slate-300", icon: "○" },
-        "In Progress": { bg: "bg-orange-500/15", text: "text-orange-400", icon: "●" },
-        "Pending Review": { bg: "bg-amber-500/15", text: "text-amber-400", icon: "◐" },
-        Completed: { bg: "bg-emerald-500/15", text: "text-emerald-400", icon: "✓" },
-        "Changes Requested": { bg: "bg-red-500/15", text: "text-red-400", icon: "!" },
+        Todo: { bg: "bg-slate-500/15", text: "text-slate-600", icon: "○" },
+        "In Progress": { bg: "bg-orange-500/15", text: "text-orange-600", icon: "●" },
+        "Pending Review": { bg: "bg-amber-500/15", text: "text-amber-600", icon: "◐" },
+        Completed: { bg: "bg-emerald-500/15", text: "text-emerald-600", icon: "✓" },
+        "Changes Requested": { bg: "bg-red-500/15", text: "text-red-600", icon: "!" },
     };
 
     const complexityConfig: Record<string, { bg: string; text: string; glow: string }> = {
-        Easy: { bg: "bg-emerald-500/10", text: "text-emerald-400", glow: "shadow-emerald-500/20" },
-        Medium: { bg: "bg-amber-500/10", text: "text-amber-400", glow: "shadow-amber-500/20" },
-        Hard: { bg: "bg-red-500/10", text: "text-red-400", glow: "shadow-red-500/20" },
+        Easy: { bg: "bg-emerald-100", text: "text-emerald-700", glow: "shadow-emerald-500/20" },
+        Medium: { bg: "bg-amber-100", text: "text-amber-700", glow: "shadow-amber-500/20" },
+        Hard: { bg: "bg-red-100", text: "text-red-700", glow: "shadow-red-500/20" },
     };
 
     const statusStrip: Record<string, string> = {
@@ -111,7 +112,7 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
         <div
             className={`group relative overflow-hidden rounded-2xl transition-all duration-400 card-shine
                 ${task.isBlocked
-                    ? "bg-gradient-to-br from-red-950/40 to-red-900/20 border border-red-500/40 shadow-lg shadow-red-900/20"
+                    ? "bg-gradient-to-br from-red-50 to-red-100 border border-red-300 shadow-lg shadow-red-500/10"
                     : "glass-card glass-card-hover"
                 }`}
         >
@@ -155,7 +156,7 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
                             )}
                         </div>
 
-                        <h3 className="text-lg font-bold text-white truncate group-hover:text-orange-300 transition-colors duration-300">
+                        <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-orange-600 transition-colors duration-300">
                             {task.title}
                         </h3>
                     </div>
@@ -166,76 +167,50 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
                             {task.complexity}
                         </span>
                         <div className="flex items-center gap-1">
-                            <svg className="w-3 h-3 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3 h-3 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
-                            <span className="text-xs font-bold text-orange-400">{task.points} pts</span>
+                            <span className="text-xs font-bold text-orange-600">{task.points} pts</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Description */}
                 {task.description && (
-                    <p className="text-sm text-neutral-400 mb-4 line-clamp-2 leading-relaxed">
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2 leading-relaxed">
                         {task.description}
                     </p>
                 )}
 
-                {/* Metrics Grid */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                    {/* Time Tracking */}
-                    <div className={`p-3 rounded-xl border transition-all ${task.status === 'In Progress'
-                            ? "bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-500/25"
-                            : "bg-black/30 border-white/5"
-                        }`}>
-                        <div className="flex items-center gap-2 mb-2">
-                            <svg className={`w-3.5 h-3.5 ${task.status === 'In Progress' ? 'text-orange-400' : 'text-neutral-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs text-neutral-400 font-medium">Time Tracking</span>
-                        </div>
-
+                {/* Metrics Section - Radical Minimalism */}
+                <div className="grid grid-cols-[1fr,auto] gap-6 items-center mb-6 px-1">
+                    {/* Integrated Time Tracking */}
+                    <div className="flex items-center gap-4">
                         {(task.status === "In Progress" || task.status === "Todo" || task.status === "Changes Requested") ? (
-                            <div className="bg-black/40 px-3 py-2 rounded-lg border border-white/5">
-                                <TaskTimer
-                                    taskId={task._id}
-                                    initialIsRunning={task.isTimerRunning || false}
-                                    initialStartTime={task.timerStartTime || null}
-                                    initialTotalSeconds={task.totalSecondsSpent || 0}
-                                    onUpdate={onRefresh}
-                                    showControls={task.status !== "Todo"}
-                                />
-                            </div>
+                            <TaskTimer
+                                taskId={task._id}
+                                initialIsRunning={task.isTimerRunning || false}
+                                initialStartTime={task.timerStartTime || null}
+                                initialTotalSeconds={task.totalSecondsSpent || 0}
+                                onUpdate={onRefresh}
+                                showControls={task.status !== "Todo"}
+                            />
                         ) : (
-                            <div className="flex items-baseline gap-1">
-                                <span className={`text-lg font-mono font-bold ${isOvertime ? 'text-red-400' : 'text-white'}`}>
+                            <div className="flex items-baseline gap-2">
+                                <span className={`text-3xl font-mono font-bold tracking-tighter ${isOvertime ? 'text-red-600' : 'text-gray-900'}`}>
                                     {formatDuration(task.actualHours)}
                                 </span>
-                                <span className="text-xs text-neutral-500">/ {task.estimatedHours}h</span>
+                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest pb-1 border-b border-gray-200">
+                                    / {task.estimatedHours}h
+                                </span>
                             </div>
                         )}
                     </div>
 
-                    {/* Efficiency */}
-                    <div className="p-3 bg-black/30 rounded-xl border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <svg className="w-3.5 h-3.5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                            <span className="text-xs text-neutral-400 font-medium">Efficiency</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="flex-1 h-2 bg-black/40 rounded-full overflow-hidden">
-                                <div
-                                    className={`h-full rounded-full transition-all duration-500 ${isOvertime
-                                        ? 'bg-gradient-to-r from-red-600 to-red-500'
-                                        : 'bg-gradient-to-r from-emerald-600 to-emerald-400'}`}
-                                    style={{
-                                        width: `${Math.min(((task.estimatedHours / (task.actualHours || task.estimatedHours)) * 100), 100)}%`
-                                    }}
-                                />
-                            </div>
-                            <span className={`text-sm font-bold min-w-[45px] text-right ${isOvertime ? 'text-red-400' : 'text-emerald-400'}`}>
+                    {/* Integrated Efficiency */}
+                    <div className="flex flex-col items-end min-w-[100px]">
+                        <div className="flex items-center gap-2 mb-1.5">
+                            <span className={`text-sm font-bold tracking-tight ${isOvertime ? 'text-red-600' : 'text-emerald-600'}`}>
                                 {task.actualHours > 0
                                     ? (() => {
                                         const eff = Math.round((task.estimatedHours / task.actualHours) * 100);
@@ -243,6 +218,17 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
                                     })()
                                     : '100%'}
                             </span>
+                            <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Efficiency</span>
+                        </div>
+                        <div className="w-full h-[3px] bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all duration-1000 ease-in-out ${isOvertime
+                                    ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'
+                                    : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]'}`}
+                                style={{
+                                    width: `${Math.min(((task.estimatedHours / (task.actualHours || task.estimatedHours)) * 100), 100)}%`
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -260,7 +246,7 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
                 )}
 
                 {/* Actions Footer */}
-                <div className="flex items-center justify-between mt-2 pt-4 border-t border-white/5">
+                <div className="flex items-center justify-between mt-2 pt-4 border-t border-gray-200">
                     <div className="flex gap-2">
                         {/* Start Action */}
                         {(task.status === "Todo" || task.status === "Changes Requested") && (
@@ -296,18 +282,16 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
                         )}
 
                         {/* View Details */}
-                        {onViewDetails && (
-                            <button
-                                onClick={() => onViewDetails(task._id)}
-                                className="p-2.5 text-neutral-400 hover:text-orange-400 hover:bg-orange-500/10 rounded-xl transition-all duration-200"
-                                title="View Details"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </button>
-                        )}
+                        <Link
+                            href={`/dashboard/dev/tasks/${task._id}`}
+                            className="p-2.5 text-gray-400 hover:text-orange-600 hover:bg-orange-100 rounded-xl transition-all duration-200"
+                            title="View Details"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </Link>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -316,8 +300,8 @@ export default function TaskCard({ task, onUploadProof, onViewDetails, onToggleB
                             <button
                                 onClick={handleToggleBlocker}
                                 className={`p-2.5 rounded-xl transition-all duration-200 ${task.isBlocked
-                                    ? "text-red-400 bg-red-500/20 hover:bg-red-500/30"
-                                    : "text-neutral-400 hover:text-red-400 hover:bg-red-500/10"}`}
+                                    ? "text-red-600 bg-red-100 hover:bg-red-200"
+                                    : "text-gray-400 hover:text-red-600 hover:bg-red-100"}`}
                                 title={task.isBlocked ? "Remove Blocker" : "Mark as Blocked"}
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

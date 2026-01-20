@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 interface SidebarProps {
@@ -17,6 +17,7 @@ interface NavItem {
 
 export default function Sidebar({ userRole }: SidebarProps) {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const [collapsed, setCollapsed] = useState(false);
 
     const pmNavItems: NavItem[] = [
@@ -40,7 +41,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
         },
         {
             name: "Projects",
-            href: "/dashboard/pm?tab=projects",
+            href: "/dashboard/pm/projects",
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -49,7 +50,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
         },
         {
             name: "All Tasks",
-            href: "/dashboard/pm?tab=tasks",
+            href: "/dashboard/pm/tasks",
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -58,7 +59,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
         },
         {
             name: "Team",
-            href: "/dashboard/pm?tab=team",
+            href: "/dashboard/pm/team",
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -90,41 +91,50 @@ export default function Sidebar({ userRole }: SidebarProps) {
 
     const navItems = userRole === "PM" ? pmNavItems : devNavItems;
 
+    // Helper function to check if a navigation item is active
+    const isItemActive = (itemHref: string) => {
+        // Parse the href to extract base path and query params
+        const [basePath, queryString] = itemHref.split('?');
+
+        // For exact path matches (without query params)
+        if (!queryString) {
+            return pathname === basePath;
+        }
+
+        // Check if the base path matches
+        if (pathname !== basePath) {
+            return false;
+        }
+
+        // Parse the expected query params from the href
+        const expectedParams = new URLSearchParams(queryString);
+
+        // Check if all expected params match the current search params
+        for (const [key, value] of expectedParams.entries()) {
+            if (searchParams.get(key) !== value) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     return (
         <>
-            {/* Sidebar */}
+            {/* Modern Sidebar */}
+            {/* Modern Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-[#0a0a0a]/98 to-[#0a0a0a]/95 backdrop-blur-2xl border-r border-orange-500/10 z-40 transition-all duration-500 ease-in-out ${collapsed ? "w-20" : "w-72"
+                className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 z-40 transition-all duration-300 ${collapsed ? "w-16" : "w-64"
                     }`}
             >
-                {/* Logo Section */}
-                <div className="h-20 flex items-center justify-between px-6 border-b border-white/5">
-                    {!collapsed && (
-                        <div className="flex items-center gap-3 animate-fade-in">
-                            <div className="relative group">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition"></div>
-                                <img
-                                    src="/eontech-logo.png"
-                                    alt="EonTech"
-                                    className="h-8 w-auto relative"
-                                />
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-black text-white">
-                                    Dev<span className="gradient-text-fire">Sprint</span>
-                                </h2>
-                                <p className="text-xs text-orange-400/60 font-medium">{userRole}</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Collapse Button */}
+                {/* Toggle Section - Minimal */}
+                <div className="h-12 flex items-center justify-end px-3">
                     <button
                         onClick={() => setCollapsed(!collapsed)}
-                        className="p-2.5 rounded-xl bg-white/5 hover:bg-orange-500/10 border border-white/10 hover:border-orange-500/30 transition-all duration-300 group"
+                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors"
                     >
                         <svg
-                            className={`w-5 h-5 text-orange-400 transition-transform duration-500 ${collapsed ? "rotate-180" : ""
+                            className={`w-5 h-5 transition-transform duration-300 ${collapsed ? "rotate-180" : ""
                                 }`}
                             fill="none"
                             stroke="currentColor"
@@ -136,96 +146,85 @@ export default function Sidebar({ userRole }: SidebarProps) {
                 </div>
 
                 {/* Navigation */}
-                <nav className="p-4 space-y-2">
+                <nav className="p-3 space-y-1 mt-2">
                     {navItems.map((item, index) => {
-                        const isActive = pathname === item.href || pathname.startsWith(item.href);
+                        const isActive = isItemActive(item.href);
 
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 overflow-hidden ${isActive
-                                    ? "bg-gradient-to-r from-orange-500/20 to-orange-600/10 border border-orange-500/30 shadow-lg shadow-orange-500/20"
-                                    : "hover:bg-white/5 border border-transparent hover:border-white/10"
+                                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${isActive
+                                    ? "bg-linear-to-r from-orange-50 to-pink-50 text-orange-600 shadow-sm"
+                                    : "text-gray-700 hover:bg-gray-50"
                                     }`}
-                                style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 {/* Active indicator */}
                                 {isActive && (
-                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-400 to-orange-600 rounded-r-full"></div>
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-linear-to-b from-orange-500 to-pink-500 rounded-r-full"></div>
                                 )}
 
-                                {/* Hover glow */}
-                                <div className={`absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/5 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isActive ? "opacity-100" : ""
-                                    }`}></div>
-
                                 {/* Icon */}
-                                <div className={`relative z-10 p-2 rounded-lg transition-all duration-300 ${isActive
-                                    ? "bg-orange-500/20 text-orange-400"
-                                    : "bg-white/5 text-neutral-400 group-hover:bg-orange-500/10 group-hover:text-orange-400"
+                                <div className={`shrink-0 transition-colors duration-200 ${isActive
+                                    ? "text-orange-600"
+                                    : "text-gray-500 group-hover:text-gray-700"
                                     }`}>
                                     {item.icon}
                                 </div>
 
                                 {/* Label */}
                                 {!collapsed && (
-                                    <div className="relative z-10 flex-1">
-                                        <span className={`text-sm font-semibold transition-colors ${isActive ? "text-white" : "text-neutral-400 group-hover:text-white"
+                                    <div className="flex-1 flex items-center justify-between">
+                                        <span className={`text-sm font-medium transition-colors ${isActive ? "text-orange-600" : "text-gray-700 group-hover:text-gray-900"
                                             }`}>
                                             {item.name}
                                         </span>
+                                        {item.badge && (
+                                            <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-semibold rounded-full">
+                                                {item.badge}
+                                            </span>
+                                        )}
                                     </div>
                                 )}
 
-                                {/* Badge */}
-                                {item.badge && !collapsed && (
-                                    <div className="relative z-10 px-2 py-1 bg-orange-500/20 border border-orange-500/30 rounded-full">
-                                        <span className="text-xs font-bold text-orange-400">{item.badge}</span>
-                                    </div>
-                                )}
-
-                                {/* Arrow indicator when collapsed */}
+                                {/* Collapsed state indicator */}
                                 {collapsed && isActive && (
-                                    <div className="absolute right-2 w-1.5 h-1.5 bg-orange-400 rounded-full"></div>
+                                    <div className="absolute right-1 w-1 h-1 bg-orange-500 rounded-full"></div>
                                 )}
                             </Link>
                         );
                     })}
                 </nav>
 
-                {/* Bottom Section */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5">
+                {/* Bottom Section - Minimal Tip */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-gray-200">
                     {!collapsed ? (
-                        <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-orange-500/20 rounded-lg">
-                                    <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                </div>
-                                <span className="text-xs font-bold text-orange-300">Quick Tip</span>
+                        <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <svg className="w-3.5 h-3.5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-xs font-semibold text-gray-700">Quick Tip</span>
                             </div>
-                            <p className="text-xs text-neutral-400 leading-relaxed">
-                                Use <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-orange-400">Ctrl+B</kbd> to toggle sidebar
+                            <p className="text-xs text-gray-600">
+                                Press <kbd className="px-1.5 py-0.5 bg-white rounded text-orange-600 border border-gray-300 text-[10px] font-mono">⌘B</kbd> to toggle
                             </p>
                         </div>
                     ) : (
                         <div className="flex justify-center">
-                            <div className="p-2.5 bg-orange-500/10 rounded-lg border border-orange-500/20">
-                                <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            <div className="p-2 bg-gray-100 rounded-lg">
+                                <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                 </svg>
                             </div>
                         </div>
                     )}
                 </div>
-
-                {/* Ambient glow */}
-                <div className="absolute inset-0 bg-gradient-to-t from-orange-500/5 via-transparent to-transparent pointer-events-none opacity-50"></div>
             </aside>
 
             {/* Spacer to prevent content overlap */}
-            <div className={`transition-all duration-500 ${collapsed ? "w-20" : "w-72"}`}></div>
+            <div className={`transition-all duration-300 ${collapsed ? "w-16" : "w-64"}`}></div>
         </>
     );
 }
+

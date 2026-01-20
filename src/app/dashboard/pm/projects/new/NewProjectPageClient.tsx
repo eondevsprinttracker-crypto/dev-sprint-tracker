@@ -13,16 +13,9 @@ interface Developer {
 }
 
 const PROJECT_COLORS = [
-    "#f97316", // Orange
-    "#ef4444", // Red
-    "#22c55e", // Green
-    "#3b82f6", // Blue
-    "#8b5cf6", // Purple
-    "#ec4899", // Pink
-    "#14b8a6", // Teal
-    "#f59e0b", // Amber
-    "#6366f1", // Indigo
-    "#84cc16", // Lime
+    "#f97316", "#ef4444", "#22c55e", "#3b82f6",
+    "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b",
+    "#6366f1", "#84cc16",
 ];
 
 export default function NewProjectPageClient() {
@@ -96,132 +89,157 @@ export default function NewProjectPageClient() {
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white p-6">
-            <div className="max-w-2xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-6">
-                    <Link
-                        href="/dashboard/pm"
-                        className="text-neutral-400 hover:text-white transition flex items-center gap-1"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Back
-                    </Link>
-                </div>
-
-                {/* Form Card */}
-                <div className="glass-card rounded-2xl p-8">
-                    <div className="flex items-center gap-4 mb-8">
+        <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
+            <div className="max-w-3xl mx-auto">
+                {/* Premium Form Container */}
+                <div className="form-container-premium animate-fade-in">
+                    {/* Premium Header */}
+                    <div className="form-header-premium">
                         <div
-                            className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                            style={{ backgroundColor: selectedColor }}
+                            className="form-header-icon"
+                            style={{ background: `linear-gradient(135deg, ${selectedColor} 0%, ${selectedColor}cc 100%)` }}
                         >
-                            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                         </div>
-                        <div>
-                            <h1 className="text-2xl font-bold text-white">Create New Project</h1>
-                            <p className="text-neutral-400">Start a new project to organize your work</p>
+                        <div className="form-header-content">
+                            <h1>Create New Project</h1>
+                            <p>Start a new project to organize your work and team</p>
                         </div>
                     </div>
 
+                    {/* Error Alert */}
                     {error && (
-                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 flex items-center gap-3">
-                            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="alert-premium-error">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {error}
+                            <span>{error}</span>
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Name & Key */}
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="col-span-2">
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
-                                    Project Name *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                    className="input-premium w-full"
-                                    placeholder="e.g., Mobile App Development"
-                                />
+                        {/* Project Details Section */}
+                        <div className="section-divider-premium">
+                            <h3>Project Details</h3>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="col-span-2">
+                                    <label className="form-label-premium">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                        </svg>
+                                        Project Name <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                        className="input-stunning"
+                                        placeholder="e.g., Mobile App Development"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label-premium">
+                                        Key <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={key}
+                                        onChange={(e) => setKey(e.target.value.toUpperCase())}
+                                        required
+                                        maxLength={6}
+                                        minLength={2}
+                                        pattern="[A-Za-z]+"
+                                        className="input-stunning uppercase font-mono tracking-wider"
+                                        placeholder="MOB"
+                                    />
+                                    <p className="form-help-text">2-6 letters</p>
+                                </div>
                             </div>
+
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
-                                    Key * <span className="text-neutral-500">(2-6 letters)</span>
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                                    </svg>
+                                    Description
                                 </label>
-                                <input
-                                    type="text"
-                                    value={key}
-                                    onChange={(e) => setKey(e.target.value.toUpperCase())}
-                                    required
-                                    maxLength={6}
-                                    minLength={2}
-                                    pattern="[A-Za-z]+"
-                                    className="input-premium w-full uppercase"
-                                    placeholder="MOB"
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    rows={3}
+                                    className="textarea-stunning"
+                                    placeholder="Brief description of the project..."
                                 />
+                                <p className="form-help-text">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Describe the project&apos;s purpose and goals
+                                </p>
                             </div>
                         </div>
 
-                        {/* Description */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Description
-                            </label>
-                            <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                rows={3}
-                                className="input-premium w-full resize-none"
-                                placeholder="Brief description of the project..."
-                            />
+                        {/* Visual Identity Section */}
+                        <div className="section-divider-premium">
+                            <h3>Visual Identity</h3>
                         </div>
 
-                        {/* Color Picker */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="form-label-premium">
                                 Project Color
                             </label>
-                            <div className="flex gap-3 flex-wrap">
+                            <div className="color-picker-premium">
                                 {PROJECT_COLORS.map((color) => (
                                     <button
                                         key={color}
                                         type="button"
                                         onClick={() => setSelectedColor(color)}
-                                        className={`w-10 h-10 rounded-xl transition-all ${selectedColor === color
-                                                ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-900 scale-110"
-                                                : "hover:scale-105"
-                                            }`}
+                                        className={selectedColor === color ? "selected" : ""}
                                         style={{ backgroundColor: color }}
+                                        title={`Select ${color}`}
                                     />
                                 ))}
                             </div>
+                            <p className="form-help-text mt-3">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                This color will help identify the project across the system
+                            </p>
                         </div>
 
-                        {/* Dates */}
-                        <div className="grid grid-cols-2 gap-4">
+                        {/* Timeline Section */}
+                        <div className="section-divider-premium">
+                            <h3>Timeline</h3>
+                        </div>
+
+                        <div className="form-field-group">
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
-                                    Start Date *
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Start Date <span className="required">*</span>
                                 </label>
                                 <input
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
                                     required
-                                    className="input-premium w-full [color-scheme:dark]"
+                                    className="input-stunning"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
                                     Target End Date
                                 </label>
                                 <input
@@ -229,44 +247,49 @@ export default function NewProjectPageClient() {
                                     value={targetEndDate}
                                     onChange={(e) => setTargetEndDate(e.target.value)}
                                     min={startDate}
-                                    className="input-premium w-full [color-scheme:dark]"
+                                    className="input-stunning"
                                 />
                             </div>
                         </div>
 
-                        {/* Team Selection */}
+                        {/* Team Selection Section */}
+                        <div className="section-divider-premium">
+                            <h3>Team</h3>
+                        </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                            <label className="form-label-premium">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
                                 Team Members
                             </label>
                             {loadingDevelopers ? (
-                                <div className="p-4 bg-black/20 border border-neutral-700/50 rounded-xl">
-                                    <div className="animate-pulse flex gap-2">
-                                        <div className="h-8 w-24 skeleton rounded-lg" />
-                                        <div className="h-8 w-20 skeleton rounded-lg" />
-                                        <div className="h-8 w-28 skeleton rounded-lg" />
-                                    </div>
+                                <div className="team-chips-premium animate-pulse">
+                                    <div className="h-10 w-32 skeleton rounded-xl" />
+                                    <div className="h-10 w-28 skeleton rounded-xl" />
+                                    <div className="h-10 w-36 skeleton rounded-xl" />
                                 </div>
                             ) : developers.length === 0 ? (
-                                <div className="p-4 bg-black/20 border border-neutral-700/50 rounded-xl text-neutral-500 text-sm">
-                                    No developers available. They will be able to join once registered.
+                                <div className="info-card-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <p>No developers available. They will be able to join once registered.</p>
                                 </div>
                             ) : (
-                                <div className="flex flex-wrap gap-2 p-4 bg-black/20 border border-neutral-700/50 rounded-xl max-h-48 overflow-y-auto">
+                                <div className="team-chips-premium">
                                     {developers.map((dev) => (
                                         <button
                                             key={dev._id}
                                             type="button"
                                             onClick={() => toggleDeveloper(dev._id)}
-                                            className={`px-4 py-2 text-sm rounded-xl border transition-all flex items-center gap-2 ${selectedDevs.includes(dev._id)
-                                                    ? "bg-orange-500/20 border-orange-500/50 text-orange-400"
-                                                    : "bg-neutral-800/50 border-neutral-700/50 text-neutral-300 hover:border-neutral-600"
-                                                }`}
+                                            className={`team-chip-premium ${selectedDevs.includes(dev._id) ? "selected" : ""}`}
                                         >
-                                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-xs text-white font-medium">
+                                            <div className="avatar">
                                                 {dev.name.charAt(0).toUpperCase()}
                                             </div>
-                                            {dev.name}
+                                            <span>{dev.name}</span>
                                             {selectedDevs.includes(dev._id) && (
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -277,25 +300,28 @@ export default function NewProjectPageClient() {
                                 </div>
                             )}
                             {selectedDevs.length > 0 && (
-                                <p className="text-xs text-neutral-500 mt-2">
-                                    {selectedDevs.length} developer(s) selected
+                                <p className="form-help-text mt-3">
+                                    <svg className="!text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="text-green-600 font-medium">{selectedDevs.length} developer{selectedDevs.length !== 1 ? 's' : ''} selected</span>
                                 </p>
                             )}
                         </div>
 
                         {/* Actions */}
-                        <div className="flex justify-end gap-4 pt-4 border-t border-neutral-800">
-                            <Link href="/dashboard/pm" className="btn-ghost">
+                        <div className="form-actions-premium">
+                            <Link href="/dashboard/pm" className="btn-stunning-ghost">
                                 Cancel
                             </Link>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="btn-primary flex items-center gap-2 disabled:opacity-50"
+                                className="btn-stunning-primary"
                             >
                                 {loading ? (
                                     <>
-                                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                         </svg>
@@ -303,7 +329,7 @@ export default function NewProjectPageClient() {
                                     </>
                                 ) : (
                                     <>
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                         </svg>
                                         Create Project

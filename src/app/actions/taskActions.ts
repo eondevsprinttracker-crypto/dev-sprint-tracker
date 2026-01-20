@@ -685,7 +685,6 @@ export async function getPendingReviewTasks() {
  * Get developer leaderboard for current week
  */
 export async function getLeaderboard() {
-    const user = await getCurrentUser();
     const currentWeek = getCurrentWeekNumber();
 
     try {

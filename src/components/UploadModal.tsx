@@ -135,8 +135,8 @@ export default function UploadModal({ taskId, onClose }: UploadModalProps) {
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-white">Upload Proof</h3>
-                        <p className="text-xs text-neutral-500">Submit your work for review</p>
+                        <h3 className="text-xl font-bold text-gray-900">Upload Proof</h3>
+                        <p className="text-xs text-gray-500">Submit your work for review</p>
                     </div>
                 </div>
 
@@ -157,8 +157,8 @@ export default function UploadModal({ taskId, onClose }: UploadModalProps) {
                         className={`mb-5 p-8 border-2 border-dashed rounded-2xl transition-all cursor-pointer relative overflow-hidden ${dragActive
                             ? "border-emerald-500 bg-emerald-500/10"
                             : selectedFile
-                                ? "border-emerald-500/50 bg-emerald-500/5"
-                                : "border-neutral-700 hover:border-orange-500/50 bg-black/30"
+                                ? "border-emerald-500/50 bg-emerald-50"
+                                : "border-orange-200 hover:border-orange-300 bg-orange-50"
                             }`}
                         onDragEnter={handleDrag}
                         onDragLeave={handleDrag}
@@ -167,12 +167,12 @@ export default function UploadModal({ taskId, onClose }: UploadModalProps) {
                         onClick={() => !uploading && fileInputRef.current?.click()}
                     >
                         {uploading && (
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
                                 <div className="text-center">
                                     <div className="w-16 h-16 mx-auto mb-3 relative">
                                         <svg className="w-16 h-16 -rotate-90" viewBox="0 0 100 100">
                                             <circle
-                                                className="text-neutral-700"
+                                                className="text-gray-200"
                                                 strokeWidth="8"
                                                 stroke="currentColor"
                                                 fill="transparent"
@@ -195,11 +195,11 @@ export default function UploadModal({ taskId, onClose }: UploadModalProps) {
                                                 }}
                                             />
                                         </svg>
-                                        <span className="absolute inset-0 flex items-center justify-center text-white font-bold">
+                                        <span className="absolute inset-0 flex items-center justify-center text-gray-900 font-bold">
                                             {uploadProgress}%
                                         </span>
                                     </div>
-                                    <p className="text-sm text-neutral-300">Uploading...</p>
+                                    <p className="text-sm text-gray-600">Uploading...</p>
                                 </div>
                             </div>
                         )}
@@ -212,23 +212,23 @@ export default function UploadModal({ taskId, onClose }: UploadModalProps) {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <p className="text-sm text-white font-medium mb-1 truncate max-w-[200px] mx-auto">
+                                    <p className="text-sm text-gray-900 font-medium mb-1 truncate max-w-[200px] mx-auto">
                                         {selectedFile.name}
                                     </p>
-                                    <p className="text-xs text-neutral-500">{formatFileSize(selectedFile.size)}</p>
-                                    <p className="text-xs text-orange-400 mt-2">Click to change file</p>
+                                    <p className="text-xs text-gray-500">{formatFileSize(selectedFile.size)}</p>
+                                    <p className="text-xs text-orange-600 mt-2">Click to change file</p>
                                 </>
                             ) : (
                                 <>
-                                    <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-neutral-800 flex items-center justify-center">
-                                        <svg className="w-7 h-7 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-white border border-orange-100 flex items-center justify-center">
+                                        <svg className="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
                                     </div>
-                                    <p className="text-sm text-neutral-300 mb-1">
-                                        <span className="text-orange-400 font-medium">Click to upload</span> or drag and drop
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        <span className="text-orange-600 font-medium">Click to upload</span> or drag and drop
                                     </p>
-                                    <p className="text-xs text-neutral-500">
+                                    <p className="text-xs text-gray-500">
                                         JPG, PNG, GIF, MP4, WebM (max 50MB)
                                     </p>
                                 </>

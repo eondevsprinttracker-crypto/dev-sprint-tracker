@@ -85,17 +85,17 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
     if (!taskId) return null;
 
     const statusConfig: Record<string, { bg: string; text: string; border: string }> = {
-        Todo: { bg: "bg-slate-500/15", text: "text-slate-300", border: "border-slate-500/30" },
-        "In Progress": { bg: "bg-orange-500/15", text: "text-orange-400", border: "border-orange-500/30" },
-        "Pending Review": { bg: "bg-amber-500/15", text: "text-amber-400", border: "border-amber-500/30" },
-        Completed: { bg: "bg-emerald-500/15", text: "text-emerald-400", border: "border-emerald-500/30" },
-        "Changes Requested": { bg: "bg-red-500/15", text: "text-red-400", border: "border-red-500/30" },
+        Todo: { bg: "bg-slate-50", text: "text-slate-700", border: "border-slate-200" },
+        "In Progress": { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
+        "Pending Review": { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
+        Completed: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+        "Changes Requested": { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
     };
 
     const complexityConfig: Record<string, string> = {
-        Easy: "text-emerald-400",
-        Medium: "text-amber-400",
-        Hard: "text-red-400",
+        Easy: "text-emerald-600",
+        Medium: "text-amber-600",
+        Hard: "text-red-600",
     };
 
     function formatDate(dateString: string) {
@@ -114,18 +114,18 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
         >
             <div className="glass-modal rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col animate-scale-in-bounce">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-white/10">
+                <div className="flex items-center justify-between p-6 border-b border-orange-100">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-orange-500/15 rounded-xl">
                             <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
                         </div>
-                        <h2 className="text-xl font-bold text-white">Task Details</h2>
+                        <h2 className="text-xl font-bold text-gray-900">Task Details</h2>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                        className="p-2 text-gray-400 hover:text-gray-900 hover:bg-orange-50 rounded-xl transition-all"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -141,7 +141,7 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                                 <div className="w-12 h-12 rounded-full border-4 border-orange-500/20 border-t-orange-500 animate-spin"></div>
                                 <div className="absolute inset-0 w-12 h-12 rounded-full animate-pulse-orange bg-orange-500/10"></div>
                             </div>
-                            <p className="text-neutral-500 mt-4 text-sm">Loading task details...</p>
+                            <p className="text-gray-500 mt-4 text-sm">Loading task details...</p>
                         </div>
                     ) : task ? (
                         <div className="space-y-6">
@@ -160,18 +160,18 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                                                 </span>
                                             )}
                                         </div>
-                                        <h3 className="text-xl font-bold text-white">{task.title}</h3>
+                                        <h3 className="text-xl font-bold text-gray-900">{task.title}</h3>
                                     </div>
                                     <div className="text-right">
                                         <span className={`text-sm font-bold ${complexityConfig[task.complexity]}`}>
                                             {task.complexity}
                                         </span>
-                                        <p className="text-xs text-neutral-500 mt-1">{task.points} pts</p>
+                                        <p className="text-xs text-gray-500 mt-1">{task.points} pts</p>
                                     </div>
                                 </div>
 
                                 {task.description && (
-                                    <p className="text-neutral-300 text-sm mb-5 leading-relaxed">{task.description}</p>
+                                    <p className="text-gray-600 text-sm mb-5 leading-relaxed">{task.description}</p>
                                 )}
 
                                 {/* Blocker Note */}
@@ -185,7 +185,7 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                                             </div>
                                             <div>
                                                 <p className="text-xs font-bold text-red-400 mb-1">Blocker Note</p>
-                                                <p className="text-sm text-red-200">{task.blockerNote}</p>
+                                                <p className="text-sm text-red-600">{task.blockerNote}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -199,7 +199,7 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                                                 <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                <span className="text-sm font-medium text-neutral-300">Time Tracking</span>
+                                                <span className="text-sm font-medium text-gray-700">Time Tracking</span>
                                             </div>
                                             <TaskTimer
                                                 taskId={task._id}
@@ -214,24 +214,24 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                                 )}
 
                                 {/* Hours & Week Grid */}
-                                <div className="grid grid-cols-4 gap-3 p-4 bg-black/30 rounded-xl border border-white/5">
+                                <div className="grid grid-cols-4 gap-3 p-4 bg-orange-50 rounded-xl border border-orange-100">
                                     <div>
-                                        <p className="text-xs text-neutral-500 mb-1">Estimated</p>
-                                        <p className="text-sm font-bold text-white">{formatDuration(task.estimatedHours)}</p>
+                                        <p className="text-xs text-gray-500 mb-1">Estimated</p>
+                                        <p className="text-sm font-bold text-gray-900">{formatDuration(task.estimatedHours)}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-neutral-500 mb-1">Actual</p>
-                                        <p className={`text-sm font-bold ${task.actualHours > task.estimatedHours ? "text-red-400" : "text-white"}`}>
+                                        <p className="text-xs text-gray-500 mb-1">Actual</p>
+                                        <p className={`text-sm font-bold ${task.actualHours > task.estimatedHours ? "text-red-600" : "text-gray-900"}`}>
                                             {formatDuration(task.actualHours)}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-neutral-500 mb-1">Week</p>
-                                        <p className="text-sm font-bold text-orange-400">#{task.weekNumber}</p>
+                                        <p className="text-xs text-gray-500 mb-1">Week</p>
+                                        <p className="text-sm font-bold text-orange-600">#{task.weekNumber}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-neutral-500 mb-1">Created by</p>
-                                        <p className="text-sm font-medium text-white truncate">{task.createdBy?.name || "Unknown"}</p>
+                                        <p className="text-xs text-gray-500 mb-1">Created by</p>
+                                        <p className="text-sm font-medium text-gray-900 truncate">{task.createdBy?.name || "Unknown"}</p>
                                     </div>
                                 </div>
 
@@ -257,13 +257,13 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                             </div>
 
                             {/* Comments Section */}
-                            <div className="border-t border-white/10 pt-6">
-                                <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                                    <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="border-t border-orange-100 pt-6">
+                                <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
                                     Comments
-                                    <span className="px-2 py-0.5 text-xs bg-neutral-800 text-neutral-400 rounded-full">
+                                    <span className="px-2 py-0.5 text-xs bg-orange-50 text-gray-600 border border-orange-100 rounded-full">
                                         {task.comments?.length || 0}
                                     </span>
                                 </h4>
@@ -274,32 +274,32 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                                         task.comments.map((comment) => (
                                             <div
                                                 key={comment._id}
-                                                className="p-4 bg-white/5 rounded-xl border border-white/5 hover:border-white/10 transition-colors"
+                                                className="p-4 bg-white rounded-xl border border-orange-100 hover:border-orange-200 transition-colors"
                                             >
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
                                                             {comment.user?.name?.charAt(0) || "?"}
                                                         </div>
-                                                        <span className="text-sm font-medium text-white">
+                                                        <span className="text-sm font-medium text-gray-900">
                                                             {comment.user?.name || "Unknown"}
                                                         </span>
                                                     </div>
-                                                    <span className="text-xs text-neutral-500">
+                                                    <span className="text-xs text-gray-500">
                                                         {formatDate(comment.timestamp)}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-neutral-300 pl-9">{comment.text}</p>
+                                                <p className="text-sm text-gray-600 pl-9">{comment.text}</p>
                                             </div>
                                         ))
                                     ) : (
                                         <div className="text-center py-8">
-                                            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-neutral-800/50 flex items-center justify-center">
-                                                <svg className="w-6 h-6 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+                                                <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                                 </svg>
                                             </div>
-                                            <p className="text-sm text-neutral-500">
+                                            <p className="text-sm text-gray-500">
                                                 No comments yet. Be the first to comment!
                                             </p>
                                         </div>
@@ -343,13 +343,13 @@ export default function TaskDetailModal({ taskId, onClose, userRole }: TaskDetai
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center py-16">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-neutral-800/50 flex items-center justify-center">
-                                <svg className="w-8 h-8 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="text-center py-16">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+                                <svg className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <p className="text-neutral-400 font-medium">Task not found</p>
+                            <p className="text-gray-600 font-medium">Task not found</p>
                         </div>
                     )}
                 </div>

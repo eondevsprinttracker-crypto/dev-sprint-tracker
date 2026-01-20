@@ -51,6 +51,11 @@ export default function NewSprintPageClient() {
         }
     }, [startDate]);
 
+    // Calculate sprint duration
+    const sprintDuration = startDate && endDate
+        ? Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))
+        : 0;
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
@@ -80,137 +85,188 @@ export default function NewSprintPageClient() {
         }
     }
 
-    return (
-        <div className="min-h-screen bg-[#050505] text-white p-6">
-            {/* Header */}
-            <div className="max-w-2xl mx-auto">
-                <div className="flex items-center gap-3 mb-6">
-                    <Link
-                        href="/dashboard/pm/sprints"
-                        className="text-neutral-400 hover:text-white transition flex items-center gap-1"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    if (loadingProjects) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center animate-pulse">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        Back
-                    </Link>
+                    </div>
+                    <p className="text-gray-500 font-medium">Loading projects...</p>
                 </div>
+            </div>
+        );
+    }
 
-                {/* Form Card */}
-                <div className="glass-card rounded-2xl p-8">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center">
-                            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    if (projects.length === 0) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
+                <div className="max-w-md mx-auto">
+                    <div className="form-container-premium text-center">
+                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-orange-100 to-amber-100 border border-orange-200 flex items-center justify-center">
+                            <svg className="w-10 h-10 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <div>
-                            <h1 className="text-2xl font-bold text-white">Create New Sprint</h1>
-                            <p className="text-neutral-400">Set up a new sprint iteration for your project</p>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">No Projects Found</h3>
+                        <p className="text-gray-600 mb-6">You need to create a project before you can start a sprint.</p>
+                        <Link href="/dashboard/pm/projects/new" className="btn-stunning-primary inline-flex">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Create Project
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const activeProject = projects.find(p => p._id === selectedProject);
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
+            <div className="max-w-3xl mx-auto">
+                {/* Premium Form Container */}
+                <div className="form-container-premium animate-fade-in">
+                    {/* Premium Header */}
+                    <div className="form-header-premium">
+                        <div className="form-header-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div className="form-header-content">
+                            <h1>Create New Sprint</h1>
+                            <p>Set up a new sprint iteration for your project</p>
                         </div>
                     </div>
 
+                    {/* Error Alert */}
                     {error && (
-                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 flex items-center gap-3">
-                            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="alert-premium-error">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {error}
+                            <span>{error}</span>
                         </div>
                     )}
 
-                    {loadingProjects ? (
-                        <div className="flex items-center justify-center py-12">
-                            <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Project Selection Section */}
+                        <div className="section-divider-premium">
+                            <h3>Project Selection</h3>
                         </div>
-                    ) : projects.length === 0 ? (
-                        <div className="text-center py-12">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-800/50 flex items-center justify-center">
-                                <svg className="w-8 h-8 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-neutral-300 mb-2">No projects found</h3>
-                            <p className="text-neutral-500 mb-4">You need to create a project first</p>
-                            <Link href="/dashboard/pm/projects/new" className="btn-primary inline-block">
-                                Create Project
-                            </Link>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Project Selection */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
-                                    Project *
-                                </label>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    {projects.map((project) => (
-                                        <button
-                                            key={project._id}
-                                            type="button"
-                                            onClick={() => setSelectedProject(project._id)}
-                                            className={`p-4 rounded-xl border text-left transition-all ${selectedProject === project._id
-                                                    ? "border-orange-500 bg-orange-500/10"
-                                                    : "border-neutral-700/50 bg-black/20 hover:border-neutral-600"
-                                                }`}
-                                        >
-                                            <div
-                                                className="w-3 h-3 rounded-full mb-2"
-                                                style={{ backgroundColor: project.color }}
-                                            />
-                                            <div className="text-xs text-neutral-400 mb-1">{project.key}</div>
-                                            <div className="text-sm font-medium text-white truncate">{project.name}</div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
 
-                            {/* Sprint Name */}
+                        <div>
+                            <label className="form-label-premium">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                Project <span className="required">*</span>
+                            </label>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                {projects.map((project) => (
+                                    <button
+                                        key={project._id}
+                                        type="button"
+                                        onClick={() => setSelectedProject(project._id)}
+                                        className={`project-select-card text-left ${selectedProject === project._id ? "selected" : ""}`}
+                                    >
+                                        <div
+                                            className="w-5 h-5 rounded-lg mb-3 shadow-sm"
+                                            style={{ backgroundColor: project.color }}
+                                        />
+                                        <div className="text-xs text-gray-500 mb-1 font-semibold tracking-wide">{project.key}</div>
+                                        <div className="text-sm font-bold text-gray-900 truncate">{project.name}</div>
+                                        {selectedProject === project._id && (
+                                            <div className="absolute top-3 right-3 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Sprint Details Section */}
+                        <div className="section-divider-premium">
+                            <h3>Sprint Details</h3>
+                        </div>
+
+                        <div className="space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
-                                    Sprint Name *
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    Sprint Name <span className="required">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     required
-                                    className="input-premium w-full"
+                                    className="input-stunning"
                                     placeholder="e.g., Sprint 1 - Authentication"
                                 />
                             </div>
 
-                            {/* Sprint Goal */}
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
                                     Sprint Goal
                                 </label>
                                 <textarea
                                     value={goal}
                                     onChange={(e) => setGoal(e.target.value)}
                                     rows={3}
-                                    className="input-premium w-full resize-none"
+                                    className="textarea-stunning"
                                     placeholder="What do you want to achieve in this sprint?"
                                 />
+                                <p className="form-help-text">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Define the main objective for this sprint
+                                </p>
                             </div>
+                        </div>
 
-                            {/* Dates */}
-                            <div className="grid grid-cols-2 gap-4">
+                        {/* Planning Section */}
+                        <div className="section-divider-premium">
+                            <h3>Planning</h3>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div className="form-field-group">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                                        Start Date *
+                                    <label className="form-label-premium">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        Start Date <span className="required">*</span>
                                     </label>
                                     <input
                                         type="date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
                                         required
-                                        className="input-premium w-full [color-scheme:dark]"
+                                        className="input-stunning"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                                        End Date *
+                                    <label className="form-label-premium">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                        End Date <span className="required">*</span>
                                     </label>
                                     <input
                                         type="date"
@@ -218,29 +274,30 @@ export default function NewSprintPageClient() {
                                         onChange={(e) => setEndDate(e.target.value)}
                                         min={startDate}
                                         required
-                                        className="input-premium w-full [color-scheme:dark]"
+                                        className="input-stunning"
                                     />
                                 </div>
                             </div>
 
-                            {/* Duration info */}
-                            {startDate && endDate && (
-                                <div className="text-sm text-neutral-400 bg-neutral-800/30 px-4 py-3 rounded-xl flex items-center gap-2">
-                                    <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            {/* Duration Info */}
+                            {sprintDuration > 0 && (
+                                <div className="info-card-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Sprint duration:{" "}
-                                    {Math.ceil(
-                                        (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-                                        (1000 * 60 * 60 * 24)
-                                    )}{" "}
-                                    days
+                                    <p>
+                                        <span className="font-bold text-gray-900">Sprint duration: {sprintDuration} days</span>
+                                        <br />
+                                        <span className="text-sm">Standard sprints are typically 2 weeks (14 days)</span>
+                                    </p>
                                 </div>
                             )}
 
-                            {/* Capacity */}
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
                                     Planned Capacity (Story Points)
                                 </label>
                                 <input
@@ -248,47 +305,47 @@ export default function NewSprintPageClient() {
                                     value={capacity}
                                     onChange={(e) => setCapacity(parseInt(e.target.value) || "")}
                                     min={0}
-                                    className="input-premium w-full"
+                                    className="input-stunning"
                                     placeholder="How many story points to commit?"
                                 />
-                                <p className="text-xs text-neutral-500 mt-1">
+                                <p className="form-help-text">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                     Typical team velocity is 15-30 points per sprint
                                 </p>
                             </div>
+                        </div>
 
-                            {/* Actions */}
-                            <div className="flex justify-end gap-4 pt-4 border-t border-neutral-800">
-                                <Link
-                                    href="/dashboard/pm/sprints"
-                                    className="btn-ghost"
-                                >
-                                    Cancel
-                                </Link>
-                                <button
-                                    type="submit"
-                                    disabled={loading || !selectedProject}
-                                    className="btn-primary flex items-center gap-2 disabled:opacity-50"
-                                >
-                                    {loading ? (
-                                        <>
-                                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                            </svg>
-                                            Creating...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                            </svg>
-                                            Create Sprint
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    )}
+                        {/* Actions */}
+                        <div className="form-actions-premium">
+                            <Link href="/dashboard/pm/sprints" className="btn-stunning-ghost">
+                                Cancel
+                            </Link>
+                            <button
+                                type="submit"
+                                disabled={loading || !selectedProject}
+                                className="btn-stunning-primary"
+                            >
+                                {loading ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                        </svg>
+                                        Creating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                        Create Sprint
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

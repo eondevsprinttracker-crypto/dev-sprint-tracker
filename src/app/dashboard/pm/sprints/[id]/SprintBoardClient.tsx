@@ -229,7 +229,7 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+            <div className="min-h-screen bg-white flex items-center justify-center">
                 <div className="w-10 h-10 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
@@ -237,7 +237,7 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
 
     if (!sprint) {
         return (
-            <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">
+            <div className="min-h-screen bg-white flex items-center justify-center text-gray-900">
                 <div className="text-center">
                     <h2 className="text-xl font-medium mb-2">Sprint not found</h2>
                     <Link href="/dashboard/pm/sprints" className="text-orange-400 hover:underline">
@@ -249,17 +249,17 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white">
+        <div className="min-h-screen bg-white text-gray-900">
             {/* Header */}
-            <div className="sticky top-0 z-20 bg-[#050505]/95 backdrop-blur-sm border-b border-neutral-800">
+            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-orange-100">
                 <div className="px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <Link
                                 href="/dashboard/pm/sprints"
-                                className="p-2 hover:bg-neutral-800 rounded-lg transition"
+                                className="p-2 hover:bg-orange-50 rounded-lg transition"
                             >
-                                <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                 </svg>
                             </Link>
@@ -275,17 +275,17 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                                         {sprint.project?.key}
                                     </span>
                                     <span className={`text-xs font-medium px-2 py-0.5 rounded border ${sprint.status === "Active"
-                                            ? "bg-green-500/20 text-green-400 border-green-500/30"
+                                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                                             : sprint.status === "Planning"
-                                                ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                                ? "bg-blue-50 text-blue-700 border-blue-200"
                                                 : sprint.status === "Completed"
-                                                    ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
-                                                    : "bg-neutral-500/20 text-neutral-400 border-neutral-500/30"
+                                                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                                                    : "bg-gray-50 text-gray-600 border-gray-200"
                                         }`}>
                                         {sprint.status}
                                     </span>
                                 </div>
-                                <h1 className="text-xl font-bold text-white">{sprint.name}</h1>
+                                <h1 className="text-xl font-bold text-gray-900">{sprint.name}</h1>
                             </div>
                         </div>
 
@@ -293,15 +293,15 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                             {/* Sprint Stats */}
                             <div className="hidden md:flex items-center gap-6 mr-4">
                                 <div className="text-center">
-                                    <div className="text-lg font-bold text-white">{taskStats?.completedPoints || 0}/{taskStats?.totalPoints || 0}</div>
-                                    <div className="text-xs text-neutral-500">Points</div>
+                                    <div className="text-lg font-bold text-gray-900">{taskStats?.completedPoints || 0}/{taskStats?.totalPoints || 0}</div>
+                                    <div className="text-xs text-gray-500">Points</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-lg font-bold text-white">{getDaysRemaining()}</div>
-                                    <div className="text-xs text-neutral-500">Days Left</div>
+                                    <div className="text-lg font-bold text-gray-900">{getDaysRemaining()}</div>
+                                    <div className="text-xs text-gray-500">Days Left</div>
                                 </div>
                                 <div className="w-32">
-                                    <div className="text-xs text-neutral-500 mb-1">{getProgress()}% Complete</div>
+                                    <div className="text-xs text-gray-500 mb-1">{getProgress()}% Complete</div>
                                     <div className="progress-bar">
                                         <div className="progress-bar-fill" style={{ width: `${getProgress()}%` }} />
                                     </div>
@@ -322,8 +322,8 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                             <button
                                 onClick={() => setShowBacklog(!showBacklog)}
                                 className={`px-4 py-2 text-sm rounded-xl border transition ${showBacklog
-                                        ? "bg-orange-500/20 border-orange-500/50 text-orange-400"
-                                        : "border-neutral-700 text-neutral-400 hover:border-neutral-600"
+                                        ? "bg-orange-100 border-orange-300 text-orange-700"
+                                        : "border-orange-100 text-gray-600 hover:border-orange-200"
                                     }`}
                             >
                                 Backlog ({backlog.length})
@@ -333,8 +333,8 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
 
                     {/* Sprint Goal */}
                     {sprint.goal && (
-                        <p className="text-sm text-neutral-400 mt-2 max-w-3xl">
-                            <span className="text-neutral-500">Goal:</span> {sprint.goal}
+                        <p className="text-sm text-gray-600 mt-2 max-w-3xl">
+                            <span className="text-gray-500">Goal:</span> {sprint.goal}
                         </p>
                     )}
                 </div>
@@ -353,18 +353,18 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                                 <div
                                     key={column.id}
                                     className={`w-80 flex-shrink-0 flex flex-col rounded-2xl border transition-all ${isDropTarget
-                                            ? "border-orange-500/50 bg-orange-500/5"
-                                            : "border-neutral-800 bg-neutral-900/30"
+                                            ? "border-orange-300 bg-orange-50"
+                                            : "border-orange-100 bg-white"
                                         }`}
                                     onDragOver={(e) => handleDragOver(e, column.id)}
                                     onDragLeave={handleDragLeave}
                                     onDrop={(e) => handleDrop(e, column.id)}
                                 >
                                     {/* Column Header */}
-                                    <div className={`p-4 border-b border-neutral-800 border-l-4 rounded-t-2xl ${column.color}`}>
+                                        <div className={`p-4 border-b border-orange-100 border-l-4 rounded-t-2xl ${column.color}`}>
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-semibold text-white">{column.label}</h3>
-                                            <span className="text-sm text-neutral-400">{columnTasks.length}</span>
+                                                <h3 className="font-semibold text-gray-900">{column.label}</h3>
+                                                <span className="text-sm text-gray-500">{columnTasks.length}</span>
                                         </div>
                                     </div>
 
@@ -383,16 +383,16 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                                                     <div
                                                         className={`w-2 h-2 rounded-full ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.Medium}`}
                                                     />
-                                                    <span className="text-xs text-neutral-500">{task.priority}</span>
+                                                    <span className="text-xs text-gray-500">{task.priority}</span>
                                                     {task.isBlocked && (
-                                                        <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded">
+                                                        <span className="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded">
                                                             Blocked
                                                         </span>
                                                     )}
                                                 </div>
 
                                                 {/* Title */}
-                                                <h4 className="text-sm font-medium text-white mb-2 line-clamp-2">
+                                                <h4 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2">
                                                     {task.title}
                                                 </h4>
 
@@ -400,11 +400,11 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
                                                         {/* Story Points */}
-                                                        <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded">
+                                                        <span className="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded">
                                                             {task.storyPoints || task.points} pts
                                                         </span>
                                                         {/* Hours */}
-                                                        <span className="text-xs text-neutral-500">
+                                                        <span className="text-xs text-gray-500">
                                                             {task.estimatedHours}h
                                                         </span>
                                                     </div>
@@ -421,13 +421,13 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                                                 </div>
 
                                                 {/* Quick actions on hover */}
-                                                <div className="mt-3 pt-3 border-t border-neutral-800 opacity-0 hover:opacity-100 transition">
+                                                <div className="mt-3 pt-3 border-t border-orange-100 opacity-0 hover:opacity-100 transition">
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             handleRemoveFromSprint(task._id);
                                                         }}
-                                                        className="text-xs text-red-400 hover:text-red-300"
+                                                        className="text-xs text-red-600 hover:text-red-500"
                                                     >
                                                         Remove from sprint
                                                     </button>
@@ -436,7 +436,7 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                                         ))}
 
                                         {columnTasks.length === 0 && (
-                                            <div className="text-center py-8 text-neutral-600 text-sm">
+                                            <div className="text-center py-8 text-gray-500 text-sm">
                                                 Drop tasks here
                                             </div>
                                         )}
@@ -449,14 +449,14 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
 
                 {/* Backlog Panel */}
                 {showBacklog && (
-                    <div className="w-80 flex-shrink-0 border-l border-neutral-800 bg-neutral-900/50 p-4 overflow-y-auto">
+                    <div className="w-80 flex-shrink-0 border-l border-orange-100 bg-orange-50 p-4 overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-semibold text-white">Backlog</h3>
+                            <h3 className="font-semibold text-gray-900">Backlog</h3>
                             <button
                                 onClick={() => setShowBacklog(false)}
-                                className="p-1 hover:bg-neutral-800 rounded"
+                                className="p-1 hover:bg-orange-100 rounded"
                             >
-                                <svg className="w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
@@ -472,18 +472,18 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                                         <div
                                             className={`w-2 h-2 rounded-full ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.Medium}`}
                                         />
-                                        <span className="text-xs text-neutral-500">{task.priority}</span>
+                                        <span className="text-xs text-gray-500">{task.priority}</span>
                                     </div>
-                                    <h4 className="text-sm font-medium text-white mb-2 line-clamp-2">
+                                    <h4 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2">
                                         {task.title}
                                     </h4>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded">
+                                        <span className="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded">
                                             {task.storyPoints || task.points} pts
                                         </span>
                                         <button
                                             onClick={() => handleAddToSprint(task._id)}
-                                            className="text-xs text-orange-400 hover:text-orange-300 flex items-center gap-1"
+                                            className="text-xs text-orange-600 hover:text-orange-500 flex items-center gap-1"
                                         >
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -495,7 +495,7 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                             ))}
 
                             {backlog.length === 0 && (
-                                <div className="text-center py-8 text-neutral-600 text-sm">
+                                <div className="text-center py-8 text-gray-500 text-sm">
                                     No tasks in backlog
                                 </div>
                             )}
@@ -504,7 +504,7 @@ export default function SprintBoardClient({ sprintId }: SprintBoardClientProps) 
                         {/* Add new task link */}
                         <Link
                             href={`/dashboard/pm/tasks/new?projectId=${sprint.project?._id}&sprintId=${sprintId}`}
-                            className="mt-4 w-full py-3 border border-dashed border-neutral-700 rounded-xl text-sm text-neutral-400 hover:text-white hover:border-neutral-600 transition flex items-center justify-center gap-2"
+                            className="mt-4 w-full py-3 border border-dashed border-orange-200 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:border-orange-300 transition flex items-center justify-center gap-2"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

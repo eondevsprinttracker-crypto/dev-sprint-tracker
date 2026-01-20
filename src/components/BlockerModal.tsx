@@ -51,10 +51,10 @@ export default function BlockerModal({ isOpen, onClose, onConfirm, isRemoving = 
                         )}
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-white">
+                        <h3 className="text-xl font-bold text-gray-900">
                             {isRemoving ? "Remove Blocker" : "Mark as Blocked"}
                         </h3>
-                        <p className="text-xs text-neutral-500">
+                        <p className="text-xs text-gray-500">
                             {isRemoving ? "Task will resume normal status" : "This will notify your PM"}
                         </p>
                     </div>
@@ -63,7 +63,7 @@ export default function BlockerModal({ isOpen, onClose, onConfirm, isRemoving = 
                 <form onSubmit={handleSubmit}>
                     {!isRemoving && (
                         <div className="mb-5">
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                                 What&apos;s blocking this task?
                             </label>
                             <textarea
@@ -73,7 +73,7 @@ export default function BlockerModal({ isOpen, onClose, onConfirm, isRemoving = 
                                 rows={3}
                                 className="input-premium w-full resize-none"
                             />
-                            <p className="text-xs text-neutral-500 mt-2 flex items-center gap-1.5">
+                            <p className="text-xs text-gray-500 mt-2 flex items-center gap-1.5">
                                 <svg className="w-3 h-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -83,8 +83,8 @@ export default function BlockerModal({ isOpen, onClose, onConfirm, isRemoving = 
                     )}
 
                     {isRemoving && (
-                        <div className="mb-5 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                            <p className="text-sm text-neutral-300">
+                        <div className="mb-5 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                            <p className="text-sm text-gray-600">
                                 Are you sure you want to remove the blocker from this task? The task will return to its normal status.
                             </p>
                         </div>

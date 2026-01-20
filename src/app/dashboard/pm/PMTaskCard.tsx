@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { formatDuration } from "@/lib/utils";
 
 interface Task {
@@ -22,30 +23,28 @@ interface Task {
 interface PMTaskCardProps {
     task: Task;
     onView: (taskId: string) => void;
-    onEdit: (task: Task) => void;
     onApprove?: (taskId: string) => void;
     onReject?: (taskId: string) => void;
     actionLoading?: string | null;
 }
 
 const statusColors: Record<string, { bg: string; text: string; border: string }> = {
-    Todo: { bg: "bg-slate-500/10", text: "text-slate-400", border: "border-slate-500/20" },
-    "In Progress": { bg: "bg-orange-500/10", text: "text-orange-400", border: "border-orange-500/20" },
-    "Pending Review": { bg: "bg-yellow-500/10", text: "text-yellow-400", border: "border-yellow-500/20" },
-    Completed: { bg: "bg-green-500/10", text: "text-green-400", border: "border-green-500/20" },
-    "Changes Requested": { bg: "bg-red-500/10", text: "text-red-400", border: "border-red-500/20" },
+    Todo: { bg: "bg-slate-100", text: "text-slate-600", border: "border-slate-300" },
+    "In Progress": { bg: "bg-orange-100", text: "text-orange-600", border: "border-orange-300" },
+    "Pending Review": { bg: "bg-yellow-100", text: "text-yellow-700", border: "border-yellow-300" },
+    Completed: { bg: "bg-green-100", text: "text-green-700", border: "border-green-300" },
+    "Changes Requested": { bg: "bg-red-100", text: "text-red-600", border: "border-red-300" },
 };
 
 const complexityColors: Record<string, string> = {
-    Easy: "text-green-400",
-    Medium: "text-yellow-400",
-    Hard: "text-red-400",
+    Easy: "text-green-600",
+    Medium: "text-yellow-600",
+    Hard: "text-red-600",
 };
 
 export default function PMTaskCard({
     task,
     onView,
-    onEdit,
     onApprove,
     onReject,
     actionLoading,
@@ -57,9 +56,9 @@ export default function PMTaskCard({
 
     return (
         <div
-            className={`group relative bg-[#1e1e1e]/60 backdrop-blur-sm rounded-xl border transition-all duration-300 
-                ${task.isBlocked ? "border-red-500/30" : "border-white/5"} 
-                hover:border-orange-500/30 hover:shadow-lg hover:shadow-orange-500/10`}
+            className={`group relative bg-white rounded-xl border transition-all duration-300 shadow-sm
+                ${task.isBlocked ? "border-red-300" : "border-gray-200"} 
+                hover:border-orange-400 hover:shadow-lg hover:shadow-orange-500/10`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -85,19 +84,19 @@ export default function PMTaskCard({
                                 {task.complexity}
                             </span>
                         </div>
-                        <h3 className="font-semibold text-white truncate group-hover:text-orange-300 transition-colors">
+                        <h3 className="font-semibold text-gray-900 truncate group-hover:text-orange-600 transition-colors">
                             {task.title}
                         </h3>
                     </div>
                     <div className="text-right flex-shrink-0">
-                        <div className="text-lg font-bold text-orange-400">{task.points}</div>
-                        <div className="text-xs text-slate-500">pts</div>
+                        <div className="text-lg font-bold text-orange-600">{task.points}</div>
+                        <div className="text-xs text-gray-500">pts</div>
                     </div>
                 </div>
 
                 {/* Description Preview */}
                 {task.description && (
-                    <p className="text-sm text-slate-400 mb-4 line-clamp-2">
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">
                         {task.description}
                     </p>
                 )}
@@ -108,24 +107,24 @@ export default function PMTaskCard({
                         {task.assignedTo?.name?.charAt(0) || "?"}
                     </div>
                     <div>
-                        <p className="text-sm text-white">{task.assignedTo?.name || "Unassigned"}</p>
-                        <p className="text-xs text-slate-500">{task.assignedTo?.email || ""}</p>
+                        <p className="text-sm text-gray-900">{task.assignedTo?.name || "Unassigned"}</p>
+                        <p className="text-xs text-gray-500">{task.assignedTo?.email || ""}</p>
                     </div>
                 </div>
 
                 {/* Hours Tracking */}
-                <div className="flex items-center gap-4 mb-4 p-3 bg-slate-900/50 rounded-lg">
+                <div className="flex items-center gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1">
-                        <p className="text-xs text-slate-500 mb-1">Estimated</p>
-                        <p className="text-sm font-medium text-slate-300">{task.estimatedHours}h</p>
+                        <p className="text-xs text-gray-500 mb-1">Estimated</p>
+                        <p className="text-sm font-medium text-gray-700">{task.estimatedHours}h</p>
                     </div>
-                    <div className="w-px h-8 bg-slate-700" />
+                    <div className="w-px h-8 bg-gray-200" />
                     <div className="flex-1">
-                        <p className="text-xs text-slate-500 mb-1">Actual</p>
-                        <p className={`text-sm font-medium ${isOvertime ? "text-red-400" : "text-green-400"}`}>
+                        <p className="text-xs text-gray-500 mb-1">Actual</p>
+                        <p className={`text-sm font-medium ${isOvertime ? "text-red-600" : "text-green-600"}`}>
                             {formatDuration(task.actualHours)}
                             {isOvertime && (
-                                <svg className="w-4 h-4 text-red-400 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 text-red-600 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             )}
@@ -133,10 +132,10 @@ export default function PMTaskCard({
                     </div>
                     {task.actualHours > 0 && (
                         <>
-                            <div className="w-px h-8 bg-slate-700" />
+                            <div className="w-px h-8 bg-gray-200" />
                             <div className="flex-1">
-                                <p className="text-xs text-slate-500 mb-1">Variance</p>
-                                <p className={`text-sm font-medium ${isOvertime ? "text-red-400" : "text-green-400"}`}>
+                                <p className="text-xs text-gray-500 mb-1">Variance</p>
+                                <p className={`text-sm font-medium ${isOvertime ? "text-red-600" : "text-green-600"}`}>
                                     {isOvertime ? "+" : ""}{formatDuration(hoursVariance)}
                                 </p>
                             </div>
@@ -146,14 +145,14 @@ export default function PMTaskCard({
 
                 {/* Blocker Note */}
                 {task.isBlocked && task.blockerNote && (
-                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                         <div className="flex items-center gap-2 mb-1">
-                            <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                             </svg>
-                            <p className="text-xs text-red-300 font-medium">Blocker:</p>
+                            <p className="text-xs text-red-700 font-medium">Blocker:</p>
                         </div>
-                        <p className="text-sm text-red-400">{task.blockerNote}</p>
+                        <p className="text-sm text-red-600">{task.blockerNote}</p>
                     </div>
                 )}
 
@@ -163,7 +162,7 @@ export default function PMTaskCard({
                         href={task.proofUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm text-orange-400 hover:text-orange-300 mb-4 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm text-orange-600 hover:text-orange-500 mb-4 transition-colors"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -173,19 +172,19 @@ export default function PMTaskCard({
                 )}
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 pt-3 border-t border-slate-700/50">
-                    <button
-                        onClick={() => onView(task._id)}
-                        className="flex-1 py-2 px-3 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
+                <div className="flex items-center gap-2 pt-3 border-t border-gray-200">
+                    <Link
+                        href={`/dashboard/pm/tasks/${task._id}`}
+                        className="flex-1 py-2 px-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition flex items-center justify-center"
                     >
                         View Details
-                    </button>
-                    <button
-                        onClick={() => onEdit(task)}
-                        className="flex-1 py-2 px-3 text-sm font-medium text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 rounded-lg transition"
+                    </Link>
+                    <Link
+                        href={`/dashboard/pm/tasks/${task._id}/edit`}
+                        className="flex-1 py-2 px-3 text-sm font-medium text-orange-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition flex items-center justify-center"
                     >
                         Edit
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Review Actions - Only for Pending Review status */}

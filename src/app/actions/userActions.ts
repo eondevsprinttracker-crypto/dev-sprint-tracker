@@ -20,7 +20,7 @@ async function getCurrentUser() {
  * Cascading deletes: all tasks assigned to the developer and their comments
  */
 export async function deleteDeveloper(developerId: string) {
-    const user = await getCurrentUser() as any;
+    const user = await getCurrentUser();
 
     if (user.role !== "PM") {
         return { success: false, error: "Only Project Managers can delete developers" };
