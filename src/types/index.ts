@@ -9,7 +9,7 @@ export interface UserSession {
     id: string;
     name: string;
     email: string;
-    role: 'PM' | 'Developer';
+    role: 'PM' | 'Developer' | 'QA';
 }
 
 // Safe user type (without password)
@@ -17,7 +17,7 @@ export interface SafeUser {
     _id: string;
     name: string;
     email: string;
-    role: 'PM' | 'Developer';
+    role: 'PM' | 'Developer' | 'QA';
     createdAt: Date;
     updatedAt: Date;
 }

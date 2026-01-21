@@ -231,7 +231,7 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)] px-8 md:px-12 lg:px-16">
+        <div className="flex flex-col h-[calc(100vh-80px)] max-w-7xl mx-auto px-6">
             {/* Header - No longer fixed, just part of layout */}
             <header className="flex-shrink-0 mb-6">
                 {/* Toast Notification */}

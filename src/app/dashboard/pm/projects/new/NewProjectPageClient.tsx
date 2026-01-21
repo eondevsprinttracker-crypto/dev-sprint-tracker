@@ -289,7 +289,7 @@ export default function NewProjectPageClient() {
 
     return (
         <div className="bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
-            <div className="w-full mx-auto px-8 md:px-12 lg:px-16">
+            <div className="w-full max-w-6xl mx-auto px-6">
                 {/* Premium Form Container */}
                 <div className="form-container-premium form-container-full animate-fade-in w-full">
                     {/* Premium Header */}

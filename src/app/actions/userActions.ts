@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import Task from "@/models/Task";
+import bcrypt from "bcryptjs";
 
 // Helper to get current user
 async function getCurrentUser() {
@@ -61,5 +62,49 @@ export async function deleteDeveloper(developerId: string) {
     } catch (error) {
         console.error("Delete developer error:", error);
         return { success: false, error: "Failed to delete developer" };
+    }
+}
+
+/**
+ * Create a new team member (Developer or QA) - PM only
+ */
+export async function createTeamMember(data: {
+    name: string;
+    email: string;
+    password?: string;
+    role: "Developer" | "QA";
+}) {
+    const user = await getCurrentUser();
+
+    if (user.role !== "PM") {
+        return { success: false, error: "Only Project Managers can create team members" };
+    }
+
+    try {
+        await dbConnect();
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: data.email });
+        if (existingUser) {
+            return { success: false, error: "User with this email already exists" };
+        }
+
+        const hashedPassword = data.password
+            ? await bcrypt.hash(data.password, 10)
+            : undefined;
+
+        await User.create({
+            name: data.name,
+            email: data.email,
+            password: hashedPassword,
+            role: data.role,
+            photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random`,
+        });
+
+        revalidatePath("/dashboard");
+        return { success: true };
+    } catch (error) {
+        console.error("Create team member error:", error);
+        return { success: false, error: "Failed to create team member" };
     }
 }

@@ -7,7 +7,7 @@ import Image from "next/image";
 
 interface NavbarProps {
     userName: string;
-    userRole: "PM" | "Developer";
+    userRole: "PM" | "Developer" | "QA";
     userImage?: string;
 }
 
@@ -65,9 +65,11 @@ export default function Navbar({ userName, userRole, userImage }: NavbarProps) {
                         <div className="hidden md:block ml-2">
                             <span className={`px-3 py-1 text-xs font-semibold rounded-full ${userRole === "PM"
                                 ? "bg-orange-100 text-orange-700 border border-orange-200"
-                                : "bg-blue-100 text-blue-700 border border-blue-200"
+                                : userRole === "QA"
+                                    ? "bg-purple-100 text-purple-700 border border-purple-200"
+                                    : "bg-blue-100 text-blue-700 border border-blue-200"
                                 }`}>
-                                {userRole === "PM" ? "PM" : "Dev"}
+                                {userRole === "PM" ? "PM" : userRole === "QA" ? "QA" : "Dev"}
                             </span>
                         </div>
                     </div>

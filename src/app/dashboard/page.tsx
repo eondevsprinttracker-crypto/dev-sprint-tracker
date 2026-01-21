@@ -11,6 +11,8 @@ export default async function DashboardPage() {
     // Redirect based on role
     if (session.user.role === "PM") {
         redirect("/dashboard/pm");
+    } else if (session.user.role === "QA") {
+        redirect("/dashboard/qa");
     } else {
         redirect("/dashboard/dev");
     }

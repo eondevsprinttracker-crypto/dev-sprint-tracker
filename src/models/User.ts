@@ -7,7 +7,7 @@ export interface IUser extends Document {
     password?: string;
     googleId?: string;
     photoURL?: string;
-    role: 'PM' | 'Developer';
+    role: 'PM' | 'Developer' | 'QA';
     createdAt: Date;
     updatedAt: Date;
 }
@@ -48,8 +48,8 @@ const UserSchema = new Schema<IUser>(
         role: {
             type: String,
             enum: {
-                values: ['PM', 'Developer'],
-                message: 'Role must be either PM or Developer',
+                values: ['PM', 'Developer', 'QA'],
+                message: 'Role must be PM, Developer, or QA',
             },
             required: [true, 'Please specify the role'],
         },

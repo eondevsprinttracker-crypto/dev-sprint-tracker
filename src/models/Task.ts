@@ -11,7 +11,10 @@ export interface IComment {
 export type TaskComplexity = 'Easy' | 'Medium' | 'Hard';
 
 // Task status enumeration
-export type TaskStatus = 'Todo' | 'In Progress' | 'Pending Review' | 'Completed' | 'Changes Requested';
+export type TaskStatus = 'Todo' | 'In Progress' | 'Pending QA' | 'Pending Review' | 'Completed' | 'Changes Requested';
+
+// QA Review status enumeration
+export type QAReviewStatus = 'Pending' | 'Approved' | 'Failed';
 
 // Task priority enumeration
 export type TaskPriority = 'Critical' | 'High' | 'Medium' | 'Low';
@@ -30,6 +33,7 @@ export interface ITask extends Document {
     project?: mongoose.Types.ObjectId; // Optional project reference
     sprint?: mongoose.Types.ObjectId; // Optional sprint reference
     assignedTo: mongoose.Types.ObjectId;
+    assignedQA?: mongoose.Types.ObjectId; // QA engineer assigned to review
     createdBy: mongoose.Types.ObjectId;
     status: TaskStatus;
     priority: TaskPriority;
@@ -51,6 +55,14 @@ export interface ITask extends Document {
     weekNumber: number;
     comments: IComment[];
     startedAt?: Date;
+    // QA-specific fields
+    qaReviewStatus?: QAReviewStatus;
+    qaReviewNotes?: string;
+    qaReviewedAt?: Date;
+    bugsFound: number;
+    qaTimeSpent: number; // Seconds spent on QA review
+    qaTimerStartTime?: Date;
+    isQATimerRunning: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -113,10 +125,49 @@ const TaskSchema = new Schema<ITask>(
         status: {
             type: String,
             enum: {
-                values: ['Todo', 'In Progress', 'Pending Review', 'Completed', 'Changes Requested'],
+                values: ['Todo', 'In Progress', 'Pending QA', 'Pending Review', 'Completed', 'Changes Requested'],
                 message: 'Invalid task status',
             },
             default: 'Todo',
+        },
+        assignedQA: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            // Optional - tasks can be reviewed by PM directly
+        },
+        qaReviewStatus: {
+            type: String,
+            enum: {
+                values: ['Pending', 'Approved', 'Failed'],
+                message: 'Invalid QA review status',
+            },
+        },
+        qaReviewNotes: {
+            type: String,
+            trim: true,
+            maxlength: [2000, 'QA notes cannot be more than 2000 characters'],
+            default: '',
+        },
+        qaReviewedAt: {
+            type: Date,
+        },
+        bugsFound: {
+            type: Number,
+            default: 0,
+            min: [0, 'Bugs found cannot be negative'],
+        },
+        qaTimeSpent: {
+            type: Number,
+            default: 0,
+            min: [0, 'QA time spent cannot be negative'],
+        },
+        qaTimerStartTime: {
+            type: Date,
+            default: null,
+        },
+        isQATimerRunning: {
+            type: Boolean,
+            default: false,
         },
         priority: {
             type: String,
@@ -224,6 +275,7 @@ TaskSchema.index({ project: 1, status: 1 });
 TaskSchema.index({ sprint: 1, status: 1 });
 TaskSchema.index({ sprint: 1, order: 1 });
 TaskSchema.index({ priority: 1 });
+TaskSchema.index({ assignedQA: 1, status: 1 }); // QA review queries
 
 // Prevent recompilation of model during hot reloads
 const Task: Model<ITask> = mongoose.models.Task || mongoose.model<ITask>('Task', TaskSchema);
