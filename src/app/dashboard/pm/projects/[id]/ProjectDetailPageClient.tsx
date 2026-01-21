@@ -231,7 +231,7 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)]">
+        <div className="flex flex-col h-[calc(100vh-80px)] px-8 md:px-12 lg:px-16">
             {/* Header - No longer fixed, just part of layout */}
             <header className="flex-shrink-0 mb-6">
                 {/* Toast Notification */}
@@ -396,9 +396,9 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
                                                 className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:border-orange-300 hover:bg-orange-50 transition-all group"
                                             >
                                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${file.type === 'image' ? 'bg-blue-100 text-blue-600' :
-                                                        file.type === 'pdf' ? 'bg-red-100 text-red-600' :
-                                                            file.type === 'video' ? 'bg-purple-100 text-purple-600' :
-                                                                'bg-gray-100 text-gray-600'
+                                                    file.type === 'pdf' ? 'bg-red-100 text-red-600' :
+                                                        file.type === 'video' ? 'bg-purple-100 text-purple-600' :
+                                                            'bg-gray-100 text-gray-600'
                                                     }`}>
                                                     {file.type === 'image' && (
                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>

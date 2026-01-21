@@ -289,9 +289,9 @@ export default function NewProjectPageClient() {
 
     return (
         <div className="bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
-            <div className="w-full max-w-4xl mx-auto">
+            <div className="w-full mx-auto px-8 md:px-12 lg:px-16">
                 {/* Premium Form Container */}
-                <div className="form-container-premium form-container-full animate-fade-in">
+                <div className="form-container-premium form-container-full animate-fade-in w-full">
                     {/* Premium Header */}
                     <div className="form-header-premium">
                         <div
@@ -690,9 +690,9 @@ export default function NewProjectPageClient() {
                                                 className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200"
                                             >
                                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${file.type === 'image' ? 'bg-blue-100 text-blue-600' :
-                                                        file.type === 'pdf' ? 'bg-red-100 text-red-600' :
-                                                            file.type === 'video' ? 'bg-purple-100 text-purple-600' :
-                                                                'bg-gray-100 text-gray-600'
+                                                    file.type === 'pdf' ? 'bg-red-100 text-red-600' :
+                                                        file.type === 'video' ? 'bg-purple-100 text-purple-600' :
+                                                            'bg-gray-100 text-gray-600'
                                                     }`}>
                                                     {file.type === 'image' && (
                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
