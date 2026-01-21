@@ -10,6 +10,15 @@ export type ProjectVisibility = 'Private' | 'Team' | 'Public';
 export type ProjectRiskLevel = 'Low' | 'Medium' | 'High';
 
 // Project interface
+export interface IProjectAttachment {
+    name: string;
+    url: string;
+    publicId: string;
+    type: 'image' | 'video' | 'pdf' | 'document' | 'other';
+    size: number;
+    uploadedAt: Date;
+}
+
 export interface IProject extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
@@ -23,11 +32,11 @@ export interface IProject extends Document {
     priority: ProjectPriority;
     visibility: ProjectVisibility;
     riskLevel: ProjectRiskLevel;
-    budget?: number;
     client?: string;
     repository?: string;
     tags: string[];
     notes?: string; // Internal PM notes
+    attachments: IProjectAttachment[]; // File attachments
 
     // Timeline
     startDate: Date;
@@ -111,10 +120,34 @@ const ProjectSchema = new Schema<IProject>(
             },
             default: 'Low',
         },
-        budget: {
-            type: Number,
-            min: [0, 'Budget cannot be negative'],
-        },
+        attachments: [{
+            name: {
+                type: String,
+                required: true,
+                trim: true,
+            },
+            url: {
+                type: String,
+                required: true,
+            },
+            publicId: {
+                type: String,
+                required: true,
+            },
+            type: {
+                type: String,
+                enum: ['image', 'video', 'pdf', 'document', 'other'],
+                default: 'other',
+            },
+            size: {
+                type: Number,
+                default: 0,
+            },
+            uploadedAt: {
+                type: Date,
+                default: Date.now,
+            },
+        }],
         client: {
             type: String,
             trim: true,

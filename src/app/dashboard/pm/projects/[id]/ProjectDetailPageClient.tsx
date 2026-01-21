@@ -43,11 +43,18 @@ interface Project {
     priority?: string;
     visibility?: string;
     riskLevel?: string;
-    budget?: number;
     client?: string;
     repository?: string;
     tags?: string[];
     notes?: string;
+    attachments?: {
+        name: string;
+        url: string;
+        publicId: string;
+        type: 'image' | 'video' | 'pdf' | 'document' | 'other';
+        size: number;
+        uploadedAt: string;
+    }[];
     startDate: string;
     targetEndDate?: string;
     developers: { _id: string; name: string; email: string }[];
@@ -349,16 +356,8 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
                                 )}
                             </div>
 
-                            {/* Budget, Client, Repository */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {project.budget !== undefined && project.budget > 0 && (
-                                    <div className="p-4 border border-orange-200 rounded-xl">
-                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Budget</p>
-                                        <p className="text-xl font-bold text-gray-900">
-                                            ${project.budget.toLocaleString()}
-                                        </p>
-                                    </div>
-                                )}
+                            {/* Client, Repository */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {project.client && (
                                     <div className="p-4 border border-orange-200 rounded-xl">
                                         <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Client</p>
@@ -382,6 +381,49 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
                                     </div>
                                 )}
                             </div>
+
+                            {/* Attachments */}
+                            {project.attachments && project.attachments.length > 0 && (
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Attachments</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                        {project.attachments.map((file) => (
+                                            <a
+                                                key={file.publicId}
+                                                href={file.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:border-orange-300 hover:bg-orange-50 transition-all group"
+                                            >
+                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${file.type === 'image' ? 'bg-blue-100 text-blue-600' :
+                                                        file.type === 'pdf' ? 'bg-red-100 text-red-600' :
+                                                            file.type === 'video' ? 'bg-purple-100 text-purple-600' :
+                                                                'bg-gray-100 text-gray-600'
+                                                    }`}>
+                                                    {file.type === 'image' && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                    )}
+                                                    {file.type === 'pdf' && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                                                    )}
+                                                    {file.type === 'video' && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                                    )}
+                                                    {(file.type === 'document' || file.type === 'other') && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-medium text-gray-900 truncate group-hover:text-orange-600 transition-colors">{file.name}</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {(file.size / 1024).toFixed(1)} KB
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Tags */}
                             {project.tags && project.tags.length > 0 && (

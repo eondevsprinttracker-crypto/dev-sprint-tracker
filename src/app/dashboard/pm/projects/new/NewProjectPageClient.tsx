@@ -393,13 +393,13 @@ export default function NewProjectPageClient() {
                             </div>
                         </div>
 
-                        {/* ===== SECTION 3: Timeline & Budget ===== */}
+                        {/* ===== SECTION 3: Timeline ===== */}
                         <div className="section-divider-premium">
-                            <h3 className="flex items-center gap-2"><SectionIcon type="timeline" className="w-5 h-5 text-orange-500" /> Timeline & Budget</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="timeline" className="w-5 h-5 text-orange-500" /> Timeline</h3>
                         </div>
 
                         <div className="space-y-5">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="form-label-premium">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -429,26 +429,6 @@ export default function NewProjectPageClient() {
                                         min={startDate}
                                         className="input-stunning"
                                     />
-                                </div>
-                                <div>
-                                    <label className="form-label-premium">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Budget
-                                    </label>
-                                    <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                        <input
-                                            type="number"
-                                            value={budget}
-                                            onChange={(e) => setBudget(e.target.value)}
-                                            min="0"
-                                            step="100"
-                                            className="input-stunning pl-7"
-                                            placeholder="0.00"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>

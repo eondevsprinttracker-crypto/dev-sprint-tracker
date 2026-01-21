@@ -39,8 +39,6 @@ export async function createProject(formData: FormData) {
         const priority = formData.get("priority") as string || "Medium";
         const visibility = formData.get("visibility") as string || "Team";
         const riskLevel = formData.get("riskLevel") as string || "Low";
-        const budgetStr = formData.get("budget") as string;
-        const budget = budgetStr ? parseFloat(budgetStr) : undefined;
         const client = formData.get("client") as string || undefined;
         const repository = formData.get("repository") as string || undefined;
         const tagsStr = formData.get("tags") as string || "";
@@ -67,11 +65,11 @@ export async function createProject(formData: FormData) {
             priority,
             visibility,
             riskLevel,
-            budget,
             client,
             repository,
             tags,
             notes,
+            attachments: [],
             startDate: new Date(startDate),
             targetEndDate: targetEndDate ? new Date(targetEndDate) : undefined,
             developers: developerIds.map(id => new mongoose.Types.ObjectId(id)),
@@ -100,7 +98,6 @@ export async function updateProject(
         priority?: string;
         visibility?: string;
         riskLevel?: string;
-        budget?: number | null;
         client?: string | null;
         repository?: string | null;
         tags?: string[];
@@ -133,7 +130,6 @@ export async function updateProject(
         if (data.priority) project.priority = data.priority as typeof project.priority;
         if (data.visibility) project.visibility = data.visibility as typeof project.visibility;
         if (data.riskLevel) project.riskLevel = data.riskLevel as typeof project.riskLevel;
-        if (data.budget !== undefined) project.budget = data.budget ?? undefined;
         if (data.client !== undefined) project.client = data.client ?? undefined;
         if (data.repository !== undefined) project.repository = data.repository ?? undefined;
         if (data.tags !== undefined) project.tags = data.tags;
@@ -405,6 +401,89 @@ export async function getTasksByProject(projectId: string, status?: string) {
     } catch (error: unknown) {
         console.error("Get tasks by project error:", error);
         const message = error instanceof Error ? error.message : "Failed to get tasks";
+        return { success: false, error: message };
+    }
+}
+
+// Add attachment to project - PM only
+export async function addProjectAttachment(
+    projectId: string,
+    attachment: {
+        name: string;
+        url: string;
+        publicId: string;
+        type: 'image' | 'video' | 'pdf' | 'document' | 'other';
+        size: number;
+    }
+) {
+    try {
+        const user = await getCurrentUser();
+        if (user.role !== "PM") {
+            return { success: false, error: "Only Project Managers can add attachments" };
+        }
+
+        await dbConnect();
+
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return { success: false, error: "Project not found" };
+        }
+
+        project.attachments.push({
+            ...attachment,
+            uploadedAt: new Date(),
+        });
+        await project.save();
+
+        revalidatePath("/dashboard/pm");
+        return { success: true, project: JSON.parse(JSON.stringify(project)) };
+    } catch (error: unknown) {
+        console.error("Add attachment error:", error);
+        const message = error instanceof Error ? error.message : "Failed to add attachment";
+        return { success: false, error: message };
+    }
+}
+
+// Remove attachment from project - PM only
+export async function removeProjectAttachment(projectId: string, publicId: string) {
+    try {
+        const user = await getCurrentUser();
+        if (user.role !== "PM") {
+            return { success: false, error: "Only Project Managers can remove attachments" };
+        }
+
+        await dbConnect();
+
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return { success: false, error: "Project not found" };
+        }
+
+        // Find attachment to get type for Cloudinary deletion
+        const attachment = project.attachments.find((a: { publicId: string }) => a.publicId === publicId);
+        if (!attachment) {
+            return { success: false, error: "Attachment not found" };
+        }
+
+        // Remove from database first
+        project.attachments = project.attachments.filter((a: { publicId: string }) => a.publicId !== publicId);
+        await project.save();
+
+        // Delete from Cloudinary (import at runtime to avoid issues)
+        try {
+            const { deleteFile } = await import("@/lib/cloudinary");
+            const resourceType = attachment.type === 'image' ? 'image' :
+                attachment.type === 'video' ? 'video' : 'raw';
+            await deleteFile(publicId, resourceType);
+        } catch (cloudinaryError) {
+            console.error("Cloudinary delete error (non-critical):", cloudinaryError);
+        }
+
+        revalidatePath("/dashboard/pm");
+        return { success: true };
+    } catch (error: unknown) {
+        console.error("Remove attachment error:", error);
+        const message = error instanceof Error ? error.message : "Failed to remove attachment";
         return { success: false, error: message };
     }
 }

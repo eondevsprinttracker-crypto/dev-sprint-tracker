@@ -203,7 +203,6 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
             priority,
             visibility,
             riskLevel,
-            budget: budget ? parseFloat(budget) : null,
             client: client || null,
             repository: repository || null,
             tags,
@@ -457,12 +456,12 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                                 </div>
                             </div>
 
-                            {/* ===== SECTION 4: Timeline & Budget ===== */}
+                            {/* ===== SECTION 4: Timeline ===== */}
                             <div className="section-divider-premium">
-                                <h3 className="flex items-center gap-2"><SectionIcon type="timeline" className="w-5 h-5 text-orange-500" /> Timeline & Budget</h3>
+                                <h3 className="flex items-center gap-2"><SectionIcon type="timeline" className="w-5 h-5 text-orange-500" /> Timeline</h3>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="form-label-premium">
                                         Start Date <span className="required">*</span>
@@ -485,21 +484,6 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                                         onChange={(e) => setTargetEndDate(e.target.value)}
                                         className="input-stunning"
                                     />
-                                </div>
-                                <div>
-                                    <label className="form-label-premium">Budget</label>
-                                    <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                        <input
-                                            type="number"
-                                            value={budget}
-                                            onChange={(e) => setBudget(e.target.value)}
-                                            min="0"
-                                            step="100"
-                                            className="input-stunning pl-7"
-                                            placeholder="0.00"
-                                        />
-                                    </div>
                                 </div>
                             </div>
 
