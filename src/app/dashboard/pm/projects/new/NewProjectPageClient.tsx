@@ -107,12 +107,21 @@ export default function NewProjectPageClient() {
     const [priority, setPriority] = useState("Medium");
     const [visibility, setVisibility] = useState("Team");
     const [riskLevel, setRiskLevel] = useState("Low");
-    const [budget, setBudget] = useState("");
     const [client, setClient] = useState("");
     const [repository, setRepository] = useState("");
     const [tagInput, setTagInput] = useState("");
     const [tags, setTags] = useState<string[]>([]);
     const [notes, setNotes] = useState("");
+
+    // Attachments
+    const [attachments, setAttachments] = useState<{
+        name: string;
+        url: string;
+        publicId: string;
+        type: 'image' | 'video' | 'pdf' | 'document' | 'other';
+        size: number;
+    }[]>([]);
+    const [uploading, setUploading] = useState(false);
 
     // Timeline & Team
     const [selectedDevs, setSelectedDevs] = useState<string[]>([]);
@@ -168,6 +177,84 @@ export default function NewProjectPageClient() {
         }
     };
 
+    // File upload handlers
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        await uploadFiles(Array.from(files));
+    };
+
+    const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const files = e.dataTransfer.files;
+        if (files.length === 0) return;
+        await uploadFiles(Array.from(files));
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const uploadFiles = async (files: File[]) => {
+        setUploading(true);
+        try {
+            for (const file of files) {
+                if (file.size > 10 * 1024 * 1024) {
+                    setError(`File ${file.name} is too large. Max size is 10MB.`);
+                    continue;
+                }
+
+                const base64 = await fileToBase64(file);
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: base64, fileName: file.name }),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    const fileType = getFileType(file.name);
+                    setAttachments(prev => [...prev, {
+                        name: file.name,
+                        url: result.url,
+                        publicId: result.publicId,
+                        type: fileType,
+                        size: file.size,
+                    }]);
+                } else {
+                    setError(`Failed to upload ${file.name}: ${result.error}`);
+                }
+            }
+        } catch (err) {
+            setError('Upload failed. Please try again.');
+        }
+        setUploading(false);
+    };
+
+    const fileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+        });
+    };
+
+    const getFileType = (fileName: string): 'image' | 'video' | 'pdf' | 'document' | 'other' => {
+        const ext = fileName.split('.').pop()?.toLowerCase() || '';
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) return 'image';
+        if (['mp4', 'webm', 'mov', 'avi'].includes(ext)) return 'video';
+        if (ext === 'pdf') return 'pdf';
+        if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv'].includes(ext)) return 'document';
+        return 'other';
+    };
+
+    const removeAttachment = (publicId: string) => {
+        setAttachments(prev => prev.filter(a => a.publicId !== publicId));
+    };
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
@@ -182,7 +269,6 @@ export default function NewProjectPageClient() {
         formData.append("priority", priority);
         formData.append("visibility", visibility);
         formData.append("riskLevel", riskLevel);
-        if (budget) formData.append("budget", budget);
         if (client) formData.append("client", client);
         if (repository) formData.append("repository", repository);
         if (tags.length > 0) formData.append("tags", tags.join(","));
@@ -548,7 +634,100 @@ export default function NewProjectPageClient() {
                             </p>
                         </div>
 
-                        {/* ===== SECTION 7: Team ===== */}
+                        {/* ===== SECTION 7: Attachments ===== */}
+                        <div className="section-divider-premium">
+                            <h3 className="flex items-center gap-2">
+                                <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                </svg>
+                                Attachments
+                            </h3>
+                        </div>
+
+                        <div>
+                            {/* Upload Zone */}
+                            <div
+                                onDrop={handleDrop}
+                                onDragOver={handleDragOver}
+                                className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer hover:border-orange-400 hover:bg-orange-50 ${uploading ? 'border-orange-400 bg-orange-50' : 'border-gray-300'}`}
+                            >
+                                <input
+                                    type="file"
+                                    id="file-upload"
+                                    multiple
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                    accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
+                                />
+                                <label htmlFor="file-upload" className="cursor-pointer">
+                                    {uploading ? (
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                                            <p className="text-orange-600 font-medium">Uploading...</p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                                                <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-gray-700 font-medium">Drop files here or click to browse</p>
+                                            <p className="text-xs text-gray-500">PDF, Images, Videos, Documents (max 10MB each)</p>
+                                        </div>
+                                    )}
+                                </label>
+                            </div>
+
+                            {/* Uploaded Files List */}
+                            {attachments.length > 0 && (
+                                <div className="mt-4 space-y-2">
+                                    <p className="text-sm font-medium text-gray-700">{attachments.length} file(s) attached</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        {attachments.map((file) => (
+                                            <div
+                                                key={file.publicId}
+                                                className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200"
+                                            >
+                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${file.type === 'image' ? 'bg-blue-100 text-blue-600' :
+                                                        file.type === 'pdf' ? 'bg-red-100 text-red-600' :
+                                                            file.type === 'video' ? 'bg-purple-100 text-purple-600' :
+                                                                'bg-gray-100 text-gray-600'
+                                                    }`}>
+                                                    {file.type === 'image' && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                    )}
+                                                    {file.type === 'pdf' && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                                                    )}
+                                                    {file.type === 'video' && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                                    )}
+                                                    {(file.type === 'document' || file.type === 'other') && (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-medium text-gray-900 truncate text-sm">{file.name}</p>
+                                                    <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeAttachment(file.publicId)}
+                                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ===== SECTION 8: Team ===== */}
                         <div className="section-divider-premium">
                             <h3 className="flex items-center gap-2"><SectionIcon type="team" className="w-5 h-5 text-orange-500" /> Team</h3>
                         </div>

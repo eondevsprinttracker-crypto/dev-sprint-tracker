@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { uploadProof } from "@/lib/cloudinary";
+import { uploadProof, uploadProjectFile } from "@/lib/cloudinary";
 
 // Helper to get current week number
 function getCurrentWeekNumber(): number {
@@ -19,12 +19,25 @@ export async function POST(request: Request) {
     }
 
     try {
-        const { file } = await request.json();
+        const { file, fileName, projectId } = await request.json();
 
         if (!file) {
             return NextResponse.json({ success: false, error: "No file provided" }, { status: 400 });
         }
 
+        // If fileName is provided, use project file upload (for attachments)
+        if (fileName) {
+            const result = await uploadProjectFile(file, projectId || 'temp', fileName);
+            return NextResponse.json({
+                success: true,
+                url: result.url,
+                publicId: result.publicId,
+                type: result.type,
+                size: result.size,
+            });
+        }
+
+        // Otherwise use proof upload (for task completion proofs)
         const result = await uploadProof(file, session.user.id, getCurrentWeekNumber());
 
         return NextResponse.json({
