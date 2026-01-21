@@ -30,13 +30,13 @@ const PROJECT_COLORS = [
 ];
 
 const CATEGORY_OPTIONS = [
-    { value: "Web", label: "Web Application", icon: "🌐" },
-    { value: "Mobile", label: "Mobile App", icon: "📱" },
-    { value: "Desktop", label: "Desktop Software", icon: "🖥️" },
-    { value: "API", label: "API / Backend", icon: "⚡" },
-    { value: "Data", label: "Data / Analytics", icon: "📊" },
-    { value: "DevOps", label: "DevOps / Infrastructure", icon: "🔧" },
-    { value: "Other", label: "Other", icon: "📦" },
+    { value: "Web", label: "Web Application", icon: "globe" },
+    { value: "Mobile", label: "Mobile App", icon: "mobile" },
+    { value: "Desktop", label: "Desktop Software", icon: "desktop" },
+    { value: "API", label: "API / Backend", icon: "api" },
+    { value: "Data", label: "Data / Analytics", icon: "data" },
+    { value: "DevOps", label: "DevOps / Infrastructure", icon: "devops" },
+    { value: "Other", label: "Other", icon: "other" },
 ];
 
 const PRIORITY_OPTIONS = [
@@ -47,9 +47,9 @@ const PRIORITY_OPTIONS = [
 ];
 
 const VISIBILITY_OPTIONS = [
-    { value: "Private", label: "Private", icon: "🔒", desc: "Only you can see" },
-    { value: "Team", label: "Team", icon: "👥", desc: "Team members only" },
-    { value: "Public", label: "Public", icon: "🌍", desc: "Visible to all" },
+    { value: "Private", label: "Private", icon: "lock", desc: "Only you can see" },
+    { value: "Team", label: "Team", icon: "team", desc: "Team members only" },
+    { value: "Public", label: "Public", icon: "globe", desc: "Visible to all" },
 ];
 
 const RISK_LEVEL_OPTIONS = [
@@ -57,6 +57,37 @@ const RISK_LEVEL_OPTIONS = [
     { value: "Medium", label: "Medium Risk", color: "bg-amber-500" },
     { value: "High", label: "High Risk", color: "bg-red-500" },
 ];
+
+// Category icon component
+function CategoryIcon({ type, className = "w-5 h-5" }: { type: string; className?: string }) {
+    const icons: Record<string, React.ReactNode> = {
+        globe: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>,
+        mobile: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>,
+        desktop: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+        api: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
+        data: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+        devops: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+        other: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>,
+        lock: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>,
+        team: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+    };
+    return <>{icons[type] || icons.other}</>;
+}
+
+// Section icon component
+function SectionIcon({ type, className = "w-5 h-5" }: { type: string; className?: string }) {
+    const icons: Record<string, React.ReactNode> = {
+        basics: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+        classification: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>,
+        timeline: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+        links: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>,
+        tags: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>,
+        visual: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>,
+        team: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+        notes: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+    };
+    return <>{icons[type] || icons.basics}</>;
+}
 
 export default function NewProjectPageClient() {
     const router = useRouter();
@@ -204,7 +235,7 @@ export default function NewProjectPageClient() {
                     <form onSubmit={handleSubmit} className="space-y-8">
                         {/* ===== SECTION 1: Project Basics ===== */}
                         <div className="section-divider-premium">
-                            <h3>📋 Project Basics</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="basics" className="w-5 h-5 text-orange-500" /> Project Basics</h3>
                         </div>
 
                         <div className="space-y-5">
@@ -268,7 +299,7 @@ export default function NewProjectPageClient() {
 
                         {/* ===== SECTION 2: Classification ===== */}
                         <div className="section-divider-premium">
-                            <h3>🏷️ Classification</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="classification" className="w-5 h-5 text-orange-500" /> Classification</h3>
                         </div>
 
                         <div className="space-y-6">
@@ -282,11 +313,11 @@ export default function NewProjectPageClient() {
                                             type="button"
                                             onClick={() => setCategory(opt.value)}
                                             className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${category === opt.value
-                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
-                                                    : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
                                                 }`}
                                         >
-                                            <span className="text-lg">{opt.icon}</span>
+                                            <CategoryIcon type={opt.icon} className="w-5 h-5" />
                                             <span className="truncate">{opt.label}</span>
                                         </button>
                                     ))}
@@ -304,8 +335,8 @@ export default function NewProjectPageClient() {
                                                 type="button"
                                                 onClick={() => setPriority(opt.value)}
                                                 className={`px-4 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${priority === opt.value
-                                                        ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
-                                                        : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                    : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
                                                     }`}
                                             >
                                                 <span className={`w-2.5 h-2.5 rounded-full ${opt.color}`} />
@@ -323,8 +354,8 @@ export default function NewProjectPageClient() {
                                                 type="button"
                                                 onClick={() => setRiskLevel(opt.value)}
                                                 className={`px-4 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${riskLevel === opt.value
-                                                        ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
-                                                        : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                    : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
                                                     }`}
                                             >
                                                 <span className={`w-2.5 h-2.5 rounded-full ${opt.color}`} />
@@ -345,12 +376,12 @@ export default function NewProjectPageClient() {
                                             type="button"
                                             onClick={() => setVisibility(opt.value)}
                                             className={`p-4 rounded-xl border-2 transition-all text-left ${visibility === opt.value
-                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 shadow-md"
-                                                    : "bg-white border-gray-200 hover:border-orange-200 hover:shadow"
+                                                ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 shadow-md"
+                                                : "bg-white border-gray-200 hover:border-orange-200 hover:shadow"
                                                 }`}
                                         >
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className="text-lg">{opt.icon}</span>
+                                                <CategoryIcon type={opt.icon} className="w-5 h-5" />
                                                 <span className={`font-medium ${visibility === opt.value ? "text-orange-700" : "text-gray-700"}`}>
                                                     {opt.label}
                                                 </span>
@@ -364,7 +395,7 @@ export default function NewProjectPageClient() {
 
                         {/* ===== SECTION 3: Timeline & Budget ===== */}
                         <div className="section-divider-premium">
-                            <h3>📅 Timeline & Budget</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="timeline" className="w-5 h-5 text-orange-500" /> Timeline & Budget</h3>
                         </div>
 
                         <div className="space-y-5">
@@ -424,7 +455,7 @@ export default function NewProjectPageClient() {
 
                         {/* ===== SECTION 4: Repository & Client ===== */}
                         <div className="section-divider-premium">
-                            <h3>🔗 Repository & Client</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="links" className="w-5 h-5 text-orange-500" /> Repository & Client</h3>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -462,7 +493,7 @@ export default function NewProjectPageClient() {
 
                         {/* ===== SECTION 5: Tags ===== */}
                         <div className="section-divider-premium">
-                            <h3>🏷️ Tags</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="tags" className="w-5 h-5 text-orange-500" /> Tags</h3>
                         </div>
 
                         <div>
@@ -510,7 +541,7 @@ export default function NewProjectPageClient() {
 
                         {/* ===== SECTION 6: Visual Identity ===== */}
                         <div className="section-divider-premium">
-                            <h3>🎨 Visual Identity</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="visual" className="w-5 h-5 text-orange-500" /> Visual Identity</h3>
                         </div>
 
                         <div>
@@ -539,7 +570,7 @@ export default function NewProjectPageClient() {
 
                         {/* ===== SECTION 7: Team ===== */}
                         <div className="section-divider-premium">
-                            <h3>👥 Team</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="team" className="w-5 h-5 text-orange-500" /> Team</h3>
                         </div>
 
                         <div>
@@ -596,7 +627,7 @@ export default function NewProjectPageClient() {
 
                         {/* ===== SECTION 8: Internal Notes ===== */}
                         <div className="section-divider-premium">
-                            <h3>📝 Internal Notes</h3>
+                            <h3 className="flex items-center gap-2"><SectionIcon type="notes" className="w-5 h-5 text-orange-500" /> Internal Notes</h3>
                         </div>
 
                         <div>
