@@ -39,6 +39,15 @@ interface Project {
     description: string;
     status: string;
     color: string;
+    category?: string;
+    priority?: string;
+    visibility?: string;
+    riskLevel?: string;
+    budget?: number;
+    client?: string;
+    repository?: string;
+    tags?: string[];
+    notes?: string;
     startDate: string;
     targetEndDate?: string;
     developers: { _id: string; name: string; email: string }[];
@@ -56,7 +65,30 @@ interface Project {
     };
 }
 
-type TabType = "kanban" | "list" | "team";
+type TabType = "details" | "kanban" | "list" | "team";
+
+const CATEGORY_ICONS: Record<string, string> = {
+    Web: "🌐",
+    Mobile: "📱",
+    Desktop: "🖥️",
+    API: "⚡",
+    Data: "📊",
+    DevOps: "🔧",
+    Other: "📦",
+};
+
+const PRIORITY_COLORS: Record<string, string> = {
+    Low: "bg-gray-100 text-gray-700",
+    Medium: "bg-blue-100 text-blue-700",
+    High: "bg-amber-100 text-amber-700",
+    Critical: "bg-red-100 text-red-700",
+};
+
+const RISK_COLORS: Record<string, string> = {
+    Low: "bg-emerald-100 text-emerald-700",
+    Medium: "bg-amber-100 text-amber-700",
+    High: "bg-red-100 text-red-700",
+};
 
 const KANBAN_COLUMNS = [
     { key: "Todo", label: "To Do", color: "border-neutral-500", bgColor: "bg-neutral-500/10" },
@@ -70,7 +102,7 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<TabType>("kanban");
+    const [activeTab, setActiveTab] = useState<TabType>("details");
 
     // Instead of modal, we should probably link to task detail page, but for quick actions in kanban, 
     // maybe we keep modal or just simple navigation.
@@ -219,7 +251,7 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
 
                     <div className="flex items-center gap-3">
                         <div className="flex gap-1 p-1 bg-orange-50 border border-orange-100 rounded-lg">
-                            {(["kanban", "list", "team"] as TabType[]).map((tab) => (
+                            {(["details", "kanban", "list", "team"] as TabType[]).map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
@@ -228,6 +260,7 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
                                         : "text-gray-600 hover:text-gray-900 hover:bg-orange-100"
                                         }`}
                                 >
+                                    {tab === "details" && "Details"}
                                     {tab === "kanban" && "Board"}
                                     {tab === "list" && "List"}
                                     {tab === "team" && "Team"}
@@ -262,6 +295,151 @@ export default function ProjectDetailPageClient({ projectId }: ProjectDetailPage
                 </div>
 
                 <div className="flex-1 overflow-auto min-h-0">
+                    {activeTab === "details" && (
+                        <div className="bg-white rounded-xl border border-orange-100 p-6 space-y-6">
+                            {/* Project Info Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {project.category && (
+                                    <div className="p-4 bg-orange-50 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Category</p>
+                                        <p className="font-medium text-gray-900 flex items-center gap-2">
+                                            <span>{CATEGORY_ICONS[project.category] || "📦"}</span>
+                                            {project.category}
+                                        </p>
+                                    </div>
+                                )}
+                                {project.priority && (
+                                    <div className="p-4 bg-orange-50 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Priority</p>
+                                        <span className={`inline-flex px-2.5 py-1 rounded-full text-sm font-medium ${PRIORITY_COLORS[project.priority] || "bg-gray-100 text-gray-700"}`}>
+                                            {project.priority}
+                                        </span>
+                                    </div>
+                                )}
+                                {project.riskLevel && (
+                                    <div className="p-4 bg-orange-50 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Risk Level</p>
+                                        <span className={`inline-flex px-2.5 py-1 rounded-full text-sm font-medium ${RISK_COLORS[project.riskLevel] || "bg-gray-100 text-gray-700"}`}>
+                                            {project.riskLevel} Risk
+                                        </span>
+                                    </div>
+                                )}
+                                {project.visibility && (
+                                    <div className="p-4 bg-orange-50 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Visibility</p>
+                                        <p className="font-medium text-gray-900">
+                                            {project.visibility === "Private" && "🔒 "}
+                                            {project.visibility === "Team" && "👥 "}
+                                            {project.visibility === "Public" && "🌍 "}
+                                            {project.visibility}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Budget, Client, Repository */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {project.budget !== undefined && project.budget > 0 && (
+                                    <div className="p-4 border border-orange-200 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Budget</p>
+                                        <p className="text-xl font-bold text-gray-900">
+                                            ${project.budget.toLocaleString()}
+                                        </p>
+                                    </div>
+                                )}
+                                {project.client && (
+                                    <div className="p-4 border border-orange-200 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Client</p>
+                                        <p className="font-medium text-gray-900">{project.client}</p>
+                                    </div>
+                                )}
+                                {project.repository && (
+                                    <div className="p-4 border border-orange-200 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Repository</p>
+                                        <a
+                                            href={project.repository}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                            Open Repository
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Tags */}
+                            {project.tags && project.tags.length > 0 && (
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Tags</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {project.tags.map((tag) => (
+                                            <span
+                                                key={tag}
+                                                className="px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-sm font-medium"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Description */}
+                            {project.description && (
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Description</p>
+                                    <div
+                                        className="prose prose-sm max-w-none text-gray-700 bg-orange-50/50 rounded-xl p-4"
+                                        dangerouslySetInnerHTML={{ __html: project.description }}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Timeline */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 border border-orange-200 rounded-xl">
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Start Date</p>
+                                    <p className="font-medium text-gray-900">
+                                        {new Date(project.startDate).toLocaleDateString("en-US", {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                        })}
+                                    </p>
+                                </div>
+                                {project.targetEndDate && (
+                                    <div className="p-4 border border-orange-200 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Target End Date</p>
+                                        <p className="font-medium text-gray-900">
+                                            {new Date(project.targetEndDate).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                            })}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Edit Button */}
+                            <div className="pt-4 border-t border-orange-100">
+                                <Link
+                                    href={`/dashboard/pm/projects/${projectId}/edit`}
+                                    className="btn-primary inline-flex items-center gap-2 px-4 py-2"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    Edit Project
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+
                     {activeTab === "kanban" && (
                         <div className="grid grid-cols-4 gap-4 h-full min-w-[1000px] pr-2">
                             {KANBAN_COLUMNS.map((column) => (

@@ -3,9 +3,20 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { updateProject, deleteProject } from "@/app/actions/projectActions";
 import { getDevelopers } from "@/app/actions/taskActions";
-import { ProjectStatus } from "@/models/Project";
+import { ProjectStatus, ProjectCategory, ProjectPriority, ProjectVisibility, ProjectRiskLevel } from "@/models/Project";
+
+// Dynamic import for RichTextEditor to avoid SSR issues
+const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
+    ssr: false,
+    loading: () => (
+        <div className="h-[250px] rounded-xl bg-gray-100 animate-pulse flex items-center justify-center">
+            <span className="text-gray-400">Loading editor...</span>
+        </div>
+    ),
+});
 
 interface EditProjectPageProps {
     project: {
@@ -15,6 +26,15 @@ interface EditProjectPageProps {
         description: string;
         status: ProjectStatus;
         color: string;
+        category?: ProjectCategory;
+        priority?: ProjectPriority;
+        visibility?: ProjectVisibility;
+        riskLevel?: ProjectRiskLevel;
+        budget?: number;
+        client?: string;
+        repository?: string;
+        tags?: string[];
+        notes?: string;
         startDate: string;
         targetEndDate?: string;
         developers: { _id: string; name: string }[];
@@ -24,6 +44,7 @@ interface EditProjectPageProps {
 const PROJECT_COLORS = [
     "#f97316", "#ef4444", "#22c55e", "#3b82f6",
     "#8b5cf6", "#ec4899", "#14b8a6", "#f59e0b",
+    "#6366f1", "#84cc16",
 ];
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string; color: string }[] = [
@@ -31,6 +52,35 @@ const STATUS_OPTIONS: { value: ProjectStatus; label: string; color: string }[] =
     { value: "On Hold", label: "On Hold", color: "bg-amber-500" },
     { value: "Completed", label: "Completed", color: "bg-blue-500" },
     { value: "Archived", label: "Archived", color: "bg-neutral-500" },
+];
+
+const CATEGORY_OPTIONS = [
+    { value: "Web", label: "Web Application", icon: "🌐" },
+    { value: "Mobile", label: "Mobile App", icon: "📱" },
+    { value: "Desktop", label: "Desktop Software", icon: "🖥️" },
+    { value: "API", label: "API / Backend", icon: "⚡" },
+    { value: "Data", label: "Data / Analytics", icon: "📊" },
+    { value: "DevOps", label: "DevOps / Infrastructure", icon: "🔧" },
+    { value: "Other", label: "Other", icon: "📦" },
+];
+
+const PRIORITY_OPTIONS = [
+    { value: "Low", label: "Low", color: "bg-gray-400" },
+    { value: "Medium", label: "Medium", color: "bg-blue-500" },
+    { value: "High", label: "High", color: "bg-amber-500" },
+    { value: "Critical", label: "Critical", color: "bg-red-500" },
+];
+
+const VISIBILITY_OPTIONS = [
+    { value: "Private", label: "Private", icon: "🔒", desc: "Only you can see" },
+    { value: "Team", label: "Team", icon: "👥", desc: "Team members only" },
+    { value: "Public", label: "Public", icon: "🌍", desc: "Visible to all" },
+];
+
+const RISK_LEVEL_OPTIONS = [
+    { value: "Low", label: "Low Risk", color: "bg-emerald-500" },
+    { value: "Medium", label: "Medium Risk", color: "bg-amber-500" },
+    { value: "High", label: "High Risk", color: "bg-red-500" },
 ];
 
 export default function EditProjectPageClient({ project }: EditProjectPageProps) {
@@ -44,10 +94,21 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
     const [allDevelopers, setAllDevelopers] = useState<{ _id: string; name: string }[]>([]);
     const [loadingDevelopers, setLoadingDevelopers] = useState(true);
 
+    // Form state
     const [name, setName] = useState(project.name);
     const [description, setDescription] = useState(project.description);
     const [status, setStatus] = useState(project.status);
     const [selectedColor, setSelectedColor] = useState(project.color);
+    const [category, setCategory] = useState<string>(project.category || "Web");
+    const [priority, setPriority] = useState<string>(project.priority || "Medium");
+    const [visibility, setVisibility] = useState<string>(project.visibility || "Team");
+    const [riskLevel, setRiskLevel] = useState<string>(project.riskLevel || "Low");
+    const [budget, setBudget] = useState(project.budget?.toString() || "");
+    const [client, setClient] = useState(project.client || "");
+    const [repository, setRepository] = useState(project.repository || "");
+    const [tagInput, setTagInput] = useState("");
+    const [tags, setTags] = useState<string[]>(project.tags || []);
+    const [notes, setNotes] = useState(project.notes || "");
     const [startDate] = useState(
         new Date(project.startDate).toISOString().split("T")[0]
     );
@@ -77,6 +138,25 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
         );
     };
 
+    const addTag = () => {
+        const trimmed = tagInput.trim();
+        if (trimmed && !tags.includes(trimmed)) {
+            setTags([...tags, trimmed]);
+            setTagInput("");
+        }
+    };
+
+    const removeTag = (tagToRemove: string) => {
+        setTags(tags.filter(t => t !== tagToRemove));
+    };
+
+    const handleTagKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addTag();
+        }
+    };
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
@@ -87,6 +167,15 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
             description,
             status,
             color: selectedColor,
+            category,
+            priority,
+            visibility,
+            riskLevel,
+            budget: budget ? parseFloat(budget) : null,
+            client: client || null,
+            repository: repository || null,
+            tags,
+            notes: notes || null,
             startDate,
             targetEndDate: targetEndDate || null,
             developers: selectedDevs,
@@ -117,7 +206,7 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-4xl mx-auto">
                 {/* Premium Form Container */}
                 <div className="form-container-premium animate-fade-in">
                     {/* Premium Header */}
@@ -185,10 +274,10 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                     )}
 
                     {!showDeleteConfirm && (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Project Details Section */}
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            {/* ===== SECTION 1: Project Basics ===== */}
                             <div className="section-divider-premium">
-                                <h3>Project Details</h3>
+                                <h3>📋 Project Basics</h3>
                             </div>
 
                             <div className="space-y-5">
@@ -209,18 +298,18 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                                     <label className="form-label-premium">
                                         Description
                                     </label>
-                                    <textarea
-                                        rows={3}
+                                    <RichTextEditor
                                         value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        className="textarea-stunning"
+                                        onChange={setDescription}
+                                        placeholder="Describe the project goals, scope, and key deliverables..."
+                                        height={250}
                                     />
                                 </div>
                             </div>
 
-                            {/* Status Section */}
+                            {/* ===== SECTION 2: Status ===== */}
                             <div className="section-divider-premium">
-                                <h3>Status</h3>
+                                <h3>📊 Status</h3>
                             </div>
 
                             <div className="flex gap-3 flex-wrap">
@@ -240,12 +329,108 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                                 ))}
                             </div>
 
-                            {/* Timeline Section */}
+                            {/* ===== SECTION 3: Classification ===== */}
                             <div className="section-divider-premium">
-                                <h3>Timeline</h3>
+                                <h3>🏷️ Classification</h3>
                             </div>
 
-                            <div className="form-field-group">
+                            <div className="space-y-6">
+                                {/* Category */}
+                                <div>
+                                    <label className="form-label-premium">Category</label>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        {CATEGORY_OPTIONS.map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                onClick={() => setCategory(opt.value)}
+                                                className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${category === opt.value
+                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                    : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                    }`}
+                                            >
+                                                <span className="text-lg">{opt.icon}</span>
+                                                <span className="truncate">{opt.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Priority & Risk Level */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="form-label-premium">Priority</label>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {PRIORITY_OPTIONS.map((opt) => (
+                                                <button
+                                                    key={opt.value}
+                                                    type="button"
+                                                    onClick={() => setPriority(opt.value)}
+                                                    className={`px-4 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${priority === opt.value
+                                                        ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                        : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                        }`}
+                                                >
+                                                    <span className={`w-2.5 h-2.5 rounded-full ${opt.color}`} />
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="form-label-premium">Risk Level</label>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {RISK_LEVEL_OPTIONS.map((opt) => (
+                                                <button
+                                                    key={opt.value}
+                                                    type="button"
+                                                    onClick={() => setRiskLevel(opt.value)}
+                                                    className={`px-4 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${riskLevel === opt.value
+                                                        ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                        : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                        }`}
+                                                >
+                                                    <span className={`w-2.5 h-2.5 rounded-full ${opt.color}`} />
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Visibility */}
+                                <div>
+                                    <label className="form-label-premium">Visibility</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        {VISIBILITY_OPTIONS.map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                onClick={() => setVisibility(opt.value)}
+                                                className={`p-4 rounded-xl border-2 transition-all text-left ${visibility === opt.value
+                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 shadow-md"
+                                                    : "bg-white border-gray-200 hover:border-orange-200 hover:shadow"
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-lg">{opt.icon}</span>
+                                                    <span className={`font-medium ${visibility === opt.value ? "text-orange-700" : "text-gray-700"}`}>
+                                                        {opt.label}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-gray-500">{opt.desc}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ===== SECTION 4: Timeline & Budget ===== */}
+                            <div className="section-divider-premium">
+                                <h3>📅 Timeline & Budget</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label className="form-label-premium">
                                         Start Date <span className="required">*</span>
@@ -269,11 +454,99 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                                         className="input-stunning"
                                     />
                                 </div>
+                                <div>
+                                    <label className="form-label-premium">Budget</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                        <input
+                                            type="number"
+                                            value={budget}
+                                            onChange={(e) => setBudget(e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="input-stunning pl-7"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Visual Identity Section */}
+                            {/* ===== SECTION 5: Repository & Client ===== */}
                             <div className="section-divider-premium">
-                                <h3>Visual Identity</h3>
+                                <h3>🔗 Repository & Client</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="form-label-premium">Repository URL</label>
+                                    <input
+                                        type="url"
+                                        value={repository}
+                                        onChange={(e) => setRepository(e.target.value)}
+                                        className="input-stunning"
+                                        placeholder="https://github.com/org/repo"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label-premium">Client / Stakeholder</label>
+                                    <input
+                                        type="text"
+                                        value={client}
+                                        onChange={(e) => setClient(e.target.value)}
+                                        className="input-stunning"
+                                        placeholder="e.g., Acme Corporation"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* ===== SECTION 6: Tags ===== */}
+                            <div className="section-divider-premium">
+                                <h3>🏷️ Tags</h3>
+                            </div>
+
+                            <div>
+                                <label className="form-label-premium">Project Tags</label>
+                                <div className="flex gap-2 mb-3">
+                                    <input
+                                        type="text"
+                                        value={tagInput}
+                                        onChange={(e) => setTagInput(e.target.value)}
+                                        onKeyDown={handleTagKeyDown}
+                                        className="input-stunning flex-1"
+                                        placeholder="Type a tag and press Enter"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={addTag}
+                                        className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                                {tags.length > 0 && (
+                                    <div className="flex flex-wrap gap-2">
+                                        {tags.map((tag) => (
+                                            <span
+                                                key={tag}
+                                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-sm font-medium"
+                                            >
+                                                {tag}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeTag(tag)}
+                                                    className="w-4 h-4 rounded-full hover:bg-orange-200 flex items-center justify-center"
+                                                >
+                                                    ×
+                                                </button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* ===== SECTION 7: Visual Identity ===== */}
+                            <div className="section-divider-premium">
+                                <h3>🎨 Visual Identity</h3>
                             </div>
 
                             <div>
@@ -293,9 +566,9 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                                 </div>
                             </div>
 
-                            {/* Team Section */}
+                            {/* ===== SECTION 8: Team ===== */}
                             <div className="section-divider-premium">
-                                <h3>Team</h3>
+                                <h3>👥 Team</h3>
                             </div>
 
                             <div>
@@ -341,6 +614,24 @@ export default function EditProjectPageClient({ project }: EditProjectPageProps)
                                         <span className="text-green-600 font-medium">{selectedDevs.length} developer{selectedDevs.length !== 1 ? 's' : ''} selected</span>
                                     </p>
                                 )}
+                            </div>
+
+                            {/* ===== SECTION 9: Internal Notes ===== */}
+                            <div className="section-divider-premium">
+                                <h3>📝 Internal Notes</h3>
+                            </div>
+
+                            <div>
+                                <label className="form-label-premium">
+                                    PM Notes (Private)
+                                </label>
+                                <textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    rows={3}
+                                    className="textarea-stunning"
+                                    placeholder="Internal notes, reminders, or context for this project..."
+                                />
                             </div>
 
                             {/* Actions */}

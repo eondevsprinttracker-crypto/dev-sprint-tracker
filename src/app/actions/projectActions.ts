@@ -34,6 +34,19 @@ export async function createProject(formData: FormData) {
         const targetEndDate = formData.get("targetEndDate") as string || null;
         const developerIds = formData.getAll("developers") as string[];
 
+        // New fields
+        const category = formData.get("category") as string || "Web";
+        const priority = formData.get("priority") as string || "Medium";
+        const visibility = formData.get("visibility") as string || "Team";
+        const riskLevel = formData.get("riskLevel") as string || "Low";
+        const budgetStr = formData.get("budget") as string;
+        const budget = budgetStr ? parseFloat(budgetStr) : undefined;
+        const client = formData.get("client") as string || undefined;
+        const repository = formData.get("repository") as string || undefined;
+        const tagsStr = formData.get("tags") as string || "";
+        const tags = tagsStr ? tagsStr.split(",").map(t => t.trim()).filter(t => t) : [];
+        const notes = formData.get("notes") as string || undefined;
+
         // Validate required fields
         if (!name || !key || !startDate) {
             return { success: false, error: "Name, key, and start date are required" };
@@ -50,6 +63,15 @@ export async function createProject(formData: FormData) {
             key: key.toUpperCase(),
             description,
             color,
+            category,
+            priority,
+            visibility,
+            riskLevel,
+            budget,
+            client,
+            repository,
+            tags,
+            notes,
             startDate: new Date(startDate),
             targetEndDate: targetEndDate ? new Date(targetEndDate) : undefined,
             developers: developerIds.map(id => new mongoose.Types.ObjectId(id)),
@@ -65,6 +87,7 @@ export async function createProject(formData: FormData) {
     }
 }
 
+
 // Update a project - PM only
 export async function updateProject(
     projectId: string,
@@ -73,6 +96,15 @@ export async function updateProject(
         description?: string;
         status?: ProjectStatus;
         color?: string;
+        category?: string;
+        priority?: string;
+        visibility?: string;
+        riskLevel?: string;
+        budget?: number | null;
+        client?: string | null;
+        repository?: string | null;
+        tags?: string[];
+        notes?: string | null;
         startDate?: string;
         targetEndDate?: string | null;
         actualEndDate?: string | null;
@@ -97,6 +129,15 @@ export async function updateProject(
         if (data.description !== undefined) project.description = data.description;
         if (data.status) project.status = data.status;
         if (data.color) project.color = data.color;
+        if (data.category) project.category = data.category as typeof project.category;
+        if (data.priority) project.priority = data.priority as typeof project.priority;
+        if (data.visibility) project.visibility = data.visibility as typeof project.visibility;
+        if (data.riskLevel) project.riskLevel = data.riskLevel as typeof project.riskLevel;
+        if (data.budget !== undefined) project.budget = data.budget ?? undefined;
+        if (data.client !== undefined) project.client = data.client ?? undefined;
+        if (data.repository !== undefined) project.repository = data.repository ?? undefined;
+        if (data.tags !== undefined) project.tags = data.tags;
+        if (data.notes !== undefined) project.notes = data.notes ?? undefined;
         if (data.startDate) project.startDate = new Date(data.startDate);
         if (data.targetEndDate !== undefined) {
             project.targetEndDate = data.targetEndDate ? new Date(data.targetEndDate) : undefined;
@@ -105,13 +146,11 @@ export async function updateProject(
             project.actualEndDate = data.actualEndDate ? new Date(data.actualEndDate) : undefined;
         }
         if (data.developers !== undefined) {
-            console.log("Updating developers to:", data.developers);
             project.developers = data.developers.map(id => new mongoose.Types.ObjectId(id));
             project.markModified('developers');
         }
 
         await project.save();
-        console.log("Project saved successfully, developers:", project.developers);
 
         revalidatePath("/dashboard/pm");
         return { success: true, project: JSON.parse(JSON.stringify(project)) };
@@ -121,6 +160,7 @@ export async function updateProject(
         return { success: false, error: message };
     }
 }
+
 
 // Delete a project - PM only
 export async function deleteProject(projectId: string, deleteAssociatedTasks: boolean = false) {

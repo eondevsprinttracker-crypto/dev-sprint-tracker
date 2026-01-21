@@ -3,8 +3,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { createProject } from "@/app/actions/projectActions";
 import { getDevelopers } from "@/app/actions/taskActions";
+
+// Dynamic import for RichTextEditor to avoid SSR issues
+const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
+    ssr: false,
+    loading: () => (
+        <div className="h-[300px] rounded-xl bg-gray-100 animate-pulse flex items-center justify-center">
+            <span className="text-gray-400">Loading editor...</span>
+        </div>
+    ),
+});
 
 interface Developer {
     _id: string;
@@ -18,6 +29,35 @@ const PROJECT_COLORS = [
     "#6366f1", "#84cc16",
 ];
 
+const CATEGORY_OPTIONS = [
+    { value: "Web", label: "Web Application", icon: "🌐" },
+    { value: "Mobile", label: "Mobile App", icon: "📱" },
+    { value: "Desktop", label: "Desktop Software", icon: "🖥️" },
+    { value: "API", label: "API / Backend", icon: "⚡" },
+    { value: "Data", label: "Data / Analytics", icon: "📊" },
+    { value: "DevOps", label: "DevOps / Infrastructure", icon: "🔧" },
+    { value: "Other", label: "Other", icon: "📦" },
+];
+
+const PRIORITY_OPTIONS = [
+    { value: "Low", label: "Low", color: "bg-gray-400" },
+    { value: "Medium", label: "Medium", color: "bg-blue-500" },
+    { value: "High", label: "High", color: "bg-amber-500" },
+    { value: "Critical", label: "Critical", color: "bg-red-500" },
+];
+
+const VISIBILITY_OPTIONS = [
+    { value: "Private", label: "Private", icon: "🔒", desc: "Only you can see" },
+    { value: "Team", label: "Team", icon: "👥", desc: "Team members only" },
+    { value: "Public", label: "Public", icon: "🌍", desc: "Visible to all" },
+];
+
+const RISK_LEVEL_OPTIONS = [
+    { value: "Low", label: "Low Risk", color: "bg-emerald-500" },
+    { value: "Medium", label: "Medium Risk", color: "bg-amber-500" },
+    { value: "High", label: "High Risk", color: "bg-red-500" },
+];
+
 export default function NewProjectPageClient() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -25,11 +65,25 @@ export default function NewProjectPageClient() {
     const [developers, setDevelopers] = useState<Developer[]>([]);
     const [loadingDevelopers, setLoadingDevelopers] = useState(true);
 
-    // Form state
+    // Form state - Basic info
     const [name, setName] = useState("");
     const [key, setKey] = useState("");
     const [description, setDescription] = useState("");
     const [selectedColor, setSelectedColor] = useState(PROJECT_COLORS[0]);
+
+    // Enhanced fields
+    const [category, setCategory] = useState("Web");
+    const [priority, setPriority] = useState("Medium");
+    const [visibility, setVisibility] = useState("Team");
+    const [riskLevel, setRiskLevel] = useState("Low");
+    const [budget, setBudget] = useState("");
+    const [client, setClient] = useState("");
+    const [repository, setRepository] = useState("");
+    const [tagInput, setTagInput] = useState("");
+    const [tags, setTags] = useState<string[]>([]);
+    const [notes, setNotes] = useState("");
+
+    // Timeline & Team
     const [selectedDevs, setSelectedDevs] = useState<string[]>([]);
     const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
     const [targetEndDate, setTargetEndDate] = useState("");
@@ -64,6 +118,25 @@ export default function NewProjectPageClient() {
         );
     };
 
+    const addTag = () => {
+        const trimmed = tagInput.trim();
+        if (trimmed && !tags.includes(trimmed)) {
+            setTags([...tags, trimmed]);
+            setTagInput("");
+        }
+    };
+
+    const removeTag = (tagToRemove: string) => {
+        setTags(tags.filter(t => t !== tagToRemove));
+    };
+
+    const handleTagKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addTag();
+        }
+    };
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
@@ -74,6 +147,15 @@ export default function NewProjectPageClient() {
         formData.append("key", key.toUpperCase());
         formData.append("description", description);
         formData.append("color", selectedColor);
+        formData.append("category", category);
+        formData.append("priority", priority);
+        formData.append("visibility", visibility);
+        formData.append("riskLevel", riskLevel);
+        if (budget) formData.append("budget", budget);
+        if (client) formData.append("client", client);
+        if (repository) formData.append("repository", repository);
+        if (tags.length > 0) formData.append("tags", tags.join(","));
+        if (notes) formData.append("notes", notes);
         formData.append("startDate", startDate);
         if (targetEndDate) formData.append("targetEndDate", targetEndDate);
         selectedDevs.forEach((devId) => formData.append("developers", devId));
@@ -90,7 +172,7 @@ export default function NewProjectPageClient() {
 
     return (
         <div className="bg-gradient-to-br from-white via-orange-50/30 to-white p-6 md:p-8">
-            <div className="w-full">
+            <div className="w-full max-w-4xl mx-auto">
                 {/* Premium Form Container */}
                 <div className="form-container-premium form-container-full animate-fade-in">
                     {/* Premium Header */}
@@ -105,7 +187,7 @@ export default function NewProjectPageClient() {
                         </div>
                         <div className="form-header-content">
                             <h1>Create New Project</h1>
-                            <p>Start a new project to organize your work and team</p>
+                            <p>Set up a comprehensive project with all the details your team needs</p>
                         </div>
                     </div>
 
@@ -119,15 +201,15 @@ export default function NewProjectPageClient() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Project Details Section */}
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        {/* ===== SECTION 1: Project Basics ===== */}
                         <div className="section-divider-premium">
-                            <h3>Project Details</h3>
+                            <h3>📋 Project Basics</h3>
                         </div>
 
                         <div className="space-y-5">
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="col-span-2">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="md:col-span-3">
                                     <label className="form-label-premium">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -169,25 +251,266 @@ export default function NewProjectPageClient() {
                                     </svg>
                                     Description
                                 </label>
-                                <textarea
+                                <RichTextEditor
                                     value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    rows={3}
-                                    className="textarea-stunning"
-                                    placeholder="Brief description of the project..."
+                                    onChange={setDescription}
+                                    placeholder="Describe the project goals, scope, and key deliverables..."
+                                    height={250}
                                 />
-                                <p className="form-help-text">
+                                <p className="form-help-text mt-2">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Describe the project&apos;s purpose and goals
+                                    Use rich formatting to make the description clear and organized
                                 </p>
                             </div>
                         </div>
 
-                        {/* Visual Identity Section */}
+                        {/* ===== SECTION 2: Classification ===== */}
                         <div className="section-divider-premium">
-                            <h3>Visual Identity</h3>
+                            <h3>🏷️ Classification</h3>
+                        </div>
+
+                        <div className="space-y-6">
+                            {/* Category Selection */}
+                            <div>
+                                <label className="form-label-premium">Category</label>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    {CATEGORY_OPTIONS.map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            onClick={() => setCategory(opt.value)}
+                                            className={`p-3 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${category === opt.value
+                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                    : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                }`}
+                                        >
+                                            <span className="text-lg">{opt.icon}</span>
+                                            <span className="truncate">{opt.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Priority & Risk Level */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="form-label-premium">Priority</label>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {PRIORITY_OPTIONS.map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                onClick={() => setPriority(opt.value)}
+                                                className={`px-4 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${priority === opt.value
+                                                        ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                        : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                    }`}
+                                            >
+                                                <span className={`w-2.5 h-2.5 rounded-full ${opt.color}`} />
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="form-label-premium">Risk Level</label>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {RISK_LEVEL_OPTIONS.map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                onClick={() => setRiskLevel(opt.value)}
+                                                className={`px-4 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2 text-sm font-medium ${riskLevel === opt.value
+                                                        ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 text-orange-700 shadow-md"
+                                                        : "bg-white border-gray-200 text-gray-600 hover:border-orange-200 hover:shadow"
+                                                    }`}
+                                            >
+                                                <span className={`w-2.5 h-2.5 rounded-full ${opt.color}`} />
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Visibility */}
+                            <div>
+                                <label className="form-label-premium">Visibility</label>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    {VISIBILITY_OPTIONS.map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            onClick={() => setVisibility(opt.value)}
+                                            className={`p-4 rounded-xl border-2 transition-all text-left ${visibility === opt.value
+                                                    ? "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-300 shadow-md"
+                                                    : "bg-white border-gray-200 hover:border-orange-200 hover:shadow"
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="text-lg">{opt.icon}</span>
+                                                <span className={`font-medium ${visibility === opt.value ? "text-orange-700" : "text-gray-700"}`}>
+                                                    {opt.label}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-500">{opt.desc}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ===== SECTION 3: Timeline & Budget ===== */}
+                        <div className="section-divider-premium">
+                            <h3>📅 Timeline & Budget</h3>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="form-label-premium">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        Start Date <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                        required
+                                        className="input-stunning"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label-premium">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                        Target End Date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={targetEndDate}
+                                        onChange={(e) => setTargetEndDate(e.target.value)}
+                                        min={startDate}
+                                        className="input-stunning"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-label-premium">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Budget
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                        <input
+                                            type="number"
+                                            value={budget}
+                                            onChange={(e) => setBudget(e.target.value)}
+                                            min="0"
+                                            step="100"
+                                            className="input-stunning pl-7"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ===== SECTION 4: Repository & Client ===== */}
+                        <div className="section-divider-premium">
+                            <h3>🔗 Repository & Client</h3>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
+                                    Repository URL
+                                </label>
+                                <input
+                                    type="url"
+                                    value={repository}
+                                    onChange={(e) => setRepository(e.target.value)}
+                                    className="input-stunning"
+                                    placeholder="https://github.com/org/repo"
+                                />
+                            </div>
+                            <div>
+                                <label className="form-label-premium">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    Client / Stakeholder
+                                </label>
+                                <input
+                                    type="text"
+                                    value={client}
+                                    onChange={(e) => setClient(e.target.value)}
+                                    className="input-stunning"
+                                    placeholder="e.g., Acme Corporation"
+                                />
+                            </div>
+                        </div>
+
+                        {/* ===== SECTION 5: Tags ===== */}
+                        <div className="section-divider-premium">
+                            <h3>🏷️ Tags</h3>
+                        </div>
+
+                        <div>
+                            <label className="form-label-premium">Project Tags</label>
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    type="text"
+                                    value={tagInput}
+                                    onChange={(e) => setTagInput(e.target.value)}
+                                    onKeyDown={handleTagKeyDown}
+                                    className="input-stunning flex-1"
+                                    placeholder="Type a tag and press Enter"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={addTag}
+                                    className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 font-medium hover:bg-orange-200 transition"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                            {tags.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                    {tags.map((tag) => (
+                                        <span
+                                            key={tag}
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-sm font-medium"
+                                        >
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeTag(tag)}
+                                                className="w-4 h-4 rounded-full hover:bg-orange-200 flex items-center justify-center"
+                                            >
+                                                ×
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                            <p className="form-help-text mt-2">
+                                Tags help with filtering and organizing projects
+                            </p>
+                        </div>
+
+                        {/* ===== SECTION 6: Visual Identity ===== */}
+                        <div className="section-divider-premium">
+                            <h3>🎨 Visual Identity</h3>
                         </div>
 
                         <div>
@@ -214,47 +537,9 @@ export default function NewProjectPageClient() {
                             </p>
                         </div>
 
-                        {/* Timeline Section */}
+                        {/* ===== SECTION 7: Team ===== */}
                         <div className="section-divider-premium">
-                            <h3>Timeline</h3>
-                        </div>
-
-                        <div className="form-field-group">
-                            <div>
-                                <label className="form-label-premium">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    Start Date <span className="required">*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    required
-                                    className="input-stunning"
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label-premium">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                    </svg>
-                                    Target End Date
-                                </label>
-                                <input
-                                    type="date"
-                                    value={targetEndDate}
-                                    onChange={(e) => setTargetEndDate(e.target.value)}
-                                    min={startDate}
-                                    className="input-stunning"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Team Selection Section */}
-                        <div className="section-divider-premium">
-                            <h3>Team</h3>
+                            <h3>👥 Team</h3>
                         </div>
 
                         <div>
@@ -307,6 +592,30 @@ export default function NewProjectPageClient() {
                                     <span className="text-green-600 font-medium">{selectedDevs.length} developer{selectedDevs.length !== 1 ? 's' : ''} selected</span>
                                 </p>
                             )}
+                        </div>
+
+                        {/* ===== SECTION 8: Internal Notes ===== */}
+                        <div className="section-divider-premium">
+                            <h3>📝 Internal Notes</h3>
+                        </div>
+
+                        <div>
+                            <label className="form-label-premium">
+                                PM Notes (Private)
+                            </label>
+                            <textarea
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                rows={3}
+                                className="textarea-stunning"
+                                placeholder="Internal notes, reminders, or context for this project..."
+                            />
+                            <p className="form-help-text">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                These notes are only visible to you and other PMs
+                            </p>
                         </div>
 
                         {/* Actions */}

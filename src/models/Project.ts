@@ -3,6 +3,12 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 // Project status enumeration
 export type ProjectStatus = 'Active' | 'On Hold' | 'Completed' | 'Archived';
 
+// New enumerations for enhanced fields
+export type ProjectCategory = 'Web' | 'Mobile' | 'Desktop' | 'API' | 'Data' | 'DevOps' | 'Other';
+export type ProjectPriority = 'Low' | 'Medium' | 'High' | 'Critical';
+export type ProjectVisibility = 'Private' | 'Team' | 'Public';
+export type ProjectRiskLevel = 'Low' | 'Medium' | 'High';
+
 // Project interface
 export interface IProject extends Document {
     _id: mongoose.Types.ObjectId;
@@ -11,9 +17,24 @@ export interface IProject extends Document {
     key: string; // Unique project key (e.g., "DEV", "WEB")
     status: ProjectStatus;
     color: string; // Theme color for project (hex)
+
+    // Enhanced fields
+    category: ProjectCategory;
+    priority: ProjectPriority;
+    visibility: ProjectVisibility;
+    riskLevel: ProjectRiskLevel;
+    budget?: number;
+    client?: string;
+    repository?: string;
+    tags: string[];
+    notes?: string; // Internal PM notes
+
+    // Timeline
     startDate: Date;
     targetEndDate?: Date;
     actualEndDate?: Date;
+
+    // Team
     developers: mongoose.Types.ObjectId[]; // Team members assigned
     createdBy: mongoose.Types.ObjectId; // PM who created it
     createdAt: Date;
@@ -31,7 +52,7 @@ const ProjectSchema = new Schema<IProject>(
         description: {
             type: String,
             trim: true,
-            maxlength: [500, 'Description cannot be more than 500 characters'],
+            maxlength: [10000, 'Description cannot be more than 10000 characters'],
             default: '',
         },
         key: {
@@ -57,6 +78,64 @@ const ProjectSchema = new Schema<IProject>(
             default: '#f97316', // Default orange
             match: [/^#[0-9A-Fa-f]{6}$/, 'Color must be a valid hex color'],
         },
+        // Enhanced fields
+        category: {
+            type: String,
+            enum: {
+                values: ['Web', 'Mobile', 'Desktop', 'API', 'Data', 'DevOps', 'Other'],
+                message: 'Invalid project category',
+            },
+            default: 'Web',
+        },
+        priority: {
+            type: String,
+            enum: {
+                values: ['Low', 'Medium', 'High', 'Critical'],
+                message: 'Invalid project priority',
+            },
+            default: 'Medium',
+        },
+        visibility: {
+            type: String,
+            enum: {
+                values: ['Private', 'Team', 'Public'],
+                message: 'Invalid visibility setting',
+            },
+            default: 'Team',
+        },
+        riskLevel: {
+            type: String,
+            enum: {
+                values: ['Low', 'Medium', 'High'],
+                message: 'Invalid risk level',
+            },
+            default: 'Low',
+        },
+        budget: {
+            type: Number,
+            min: [0, 'Budget cannot be negative'],
+        },
+        client: {
+            type: String,
+            trim: true,
+            maxlength: [100, 'Client name cannot be more than 100 characters'],
+        },
+        repository: {
+            type: String,
+            trim: true,
+            maxlength: [500, 'Repository URL cannot be more than 500 characters'],
+        },
+        tags: [{
+            type: String,
+            trim: true,
+            maxlength: [50, 'Tag cannot be more than 50 characters'],
+        }],
+        notes: {
+            type: String,
+            trim: true,
+            maxlength: [2000, 'Notes cannot be more than 2000 characters'],
+        },
+        // Timeline
         startDate: {
             type: Date,
             required: [true, 'Please provide a start date'],
@@ -67,6 +146,7 @@ const ProjectSchema = new Schema<IProject>(
         actualEndDate: {
             type: Date,
         },
+        // Team
         developers: [
             {
                 type: Schema.Types.ObjectId,
@@ -89,6 +169,9 @@ ProjectSchema.index({ createdBy: 1 });
 ProjectSchema.index({ status: 1 });
 ProjectSchema.index({ key: 1 }, { unique: true });
 ProjectSchema.index({ developers: 1 });
+ProjectSchema.index({ category: 1 });
+ProjectSchema.index({ priority: 1 });
+ProjectSchema.index({ tags: 1 });
 
 // Prevent recompilation of model during hot reloads
 const Project: Model<IProject> =
